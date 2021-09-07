@@ -14,7 +14,7 @@ steps:
     if [ "$serviceType" == "resource-manager" ]; then
       echo 'resource-manager'
       projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP
-      if [ -f "$projectFolder" ]; then
+      if [ -d "$projectFolder" ]; then
         echo "$projectFolder exists."
       else
         echo 'generate template'
