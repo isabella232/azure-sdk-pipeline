@@ -13,9 +13,9 @@ steps:
     serviceType=$(SERVICE_TYPE)
     if [ "$serviceType" == "resource-manager" ]; then
       echo 'resource-manager'
-      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP
+      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.*
       if [ -d "$projectFolder" ]; then
-        echo "$projectFolder exists."
+        echo "the project folder exists."
       else
         echo 'generate template'
         cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)
@@ -36,7 +36,7 @@ steps:
 - bash: |
     captizeRP=$(ResourceProvider)
     captizeRP=`echo ${captizeRP:0:1} | tr  '[a-z]' '[A-Z]'`${captizeRP:1}
-    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP/src
+    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.*/src
     dotnet build /t:GenerateCode >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
