@@ -6,7 +6,7 @@ steps:
     git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
   displayName: 'pull repo'
 - bash: |
-    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$(ResourceProvider)/src
+    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.*/src
     dotnet build 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
