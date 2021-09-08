@@ -77,9 +77,7 @@ stages:
         } elseif ($target -eq "go"){
           $af="$(SDK_REPO_NAME)/sdk/$name/arm$name"
         } elseif ($target -eq "dotnet") {
-          $givenname="$name"
-          $givenname=$givenname.substring(0,1).toupper()+$givenname.substring(1).tolower() 
-          $af="$(SDK_REPO_NAME)/sdk/$name/Azure.ResourceManager.$givenname"
+          $af="$(SDK_REPO_NAME)/sdk/$name/Azure.ResourceManager.*"
         }
         echo "artifat:$af"
         Write-Host "##vso[task.setvariable variable=Artifcact]$af"
