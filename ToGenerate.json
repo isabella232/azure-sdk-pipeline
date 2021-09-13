@@ -1,0 +1,25 @@
+{
+  "serviceType": "resource-manager",
+  "resources": [],
+  "resourcelist": "",
+  "onboardType": "CI",
+  "swaggerRepo": {
+    "type": "github",
+    "path": "https://github.com/sdkautomationpipelinebot/azure-rest-api-specs",
+    "branch": "main"
+  },
+  "sdkRepo": {
+    "type": "github",
+    "path": "https://github.com/sdkautomationpipelinebot/azure-sdk-for-net",
+    "branch": "main"
+  },
+  "codegenRepo": {
+    "type": "github",
+    "path": "https://github.com/Azure/depth-coverage-pipeline",
+    "branch": "dev"
+  },
+  "jsonFileList": [],
+  "RPName": "msi",
+  "readmeFile": "/specification/msi/resource-manager/readme.md",
+  "target": "go"
+}
