@@ -1,0 +1,58 @@
+{
+  "serviceType": "resource-manager",
+  "resources": [
+    {
+      "APIVersion": "2018-03-01-preview",
+      "operations": [],
+      "Resource": "Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies",
+      "tag": "package-2021-01"
+    },
+    {
+      "APIVersion": "2020-08-01-preview",
+      "operations": [],
+      "Resource": "Microsoft.Storage/storageAccounts/queueServices/queues",
+      "tag": "package-2021-01"
+    },
+    {
+      "APIVersion": "2020-08-01-preview",
+      "operations": [],
+      "Resource": "Microsoft.Storage/storageAccounts/tableServices/tables",
+      "tag": "package-2021-01"
+    }
+  ],
+  "resourcelist": "Microsoft.Storage/storageAccounts/blobServices/containers/immutabilityPolicies,Microsoft.Storage/storageAccounts/queueServices/queues,Microsoft.Storage/storageAccounts/tableServices/tables",
+  "onboardType": "depth",
+  "swaggerRepo": {
+    "type": "github",
+    "path": "https://github.com/chunyu3/azure-rest-api-specs",
+    "branch": "main"
+  },
+  "sdkRepo": {
+    "type": "github",
+    "path": "https://github.com/chunyu3/terraform-provider-azurerm",
+    "branch": "pipeline"
+  },
+  "codegenRepo": {
+    "type": "github",
+    "path": "https://github.com/Azure/depth-coverage-pipeline",
+    "branch": "dev"
+  },
+  "jsonFileList": [
+    {
+      "jsonfile": "/specification/storage/resource-manager/Microsoft.Storage/preview/2018-03-01-preview/blob.json",
+      "ops": ""
+    },
+    {
+      "jsonfile": "/specification/storage/resource-manager/Microsoft.Storage/preview/2020-08-01-preview/queue.json",
+      "ops": ""
+    },
+    {
+      "jsonfile": "/specification/storage/resource-manager/Microsoft.Storage/preview/2020-08-01-preview/table.json",
+      "ops": ""
+    }
+  ],
+  "RPName": "storage",
+  "readmeFile": "/specification/storage/resource-manager/readme.md",
+  "target": "terraform",
+  "tag": "package-2021-01"
+}
