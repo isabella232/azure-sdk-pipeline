@@ -232,8 +232,8 @@ stages:
           fi
 
           triggerPR="https://github.com/Azure/depth-coverage-pipeline/pull/$(System.PullRequest.PullRequestNumber)"
-          submitURL="https://$(CodegenApp_Server)/$baseAPI/$(CodeGenerationName)/onboard"
-          customizeURL="https://$(CodegenApp_Server)/$baseAPI/resourceProvider/$(ResourceProvider)/sdk/$sdk/customize?triggerPR=$triggerPR&codePR=$codePR&org=$org"
+          submitURL="https://sdk-pipeline.test.azure-devex-tools.com/$baseAPI/$(CodeGenerationName)/onboard"
+          customizeURL="https://sdk-pipeline.test.azure-devex-tools.com/$baseAPI/resourceProvider/$(ResourceProvider)/sdk/$sdk/customize?triggerPR=$triggerPR&codePR=$codePR&org=$org"
           
 
           
@@ -261,7 +261,7 @@ stages:
           python scripts/sendGridemail.py "scripts/email.html" $to_mail "Depth-coverage Onboarding Confirm" $(API_KEY)
           echo "end of send email"
 
-          codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "pipelineCompleted"}}')
+          codePR=$(curl -X PATCH -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "pipelineCompleted"}}')
         displayName: "send confirm email"
 - stage: Result
   jobs:
@@ -269,5 +269,5 @@ stages:
     condition: always()
     steps:
     - bash: |
-        codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
+        codePR=$(curl -X PATCH -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
       displayName: 'set complete'

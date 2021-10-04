@@ -32,15 +32,15 @@ steps:
     # publish result to cosmos db
     sudo apt-get install jq -y
     result=`jq . pipe.log`
-    # curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/taskResult -d '{"pipelineBuildId":$(Build.BuildId), "taskResult": '"$result"'}'
-    curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/taskResult -d '{"pipelineBuildId":"$(Build.BuildId)", "taskResult": '"$result"'}'
+    # curl -X POST -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName)/taskResult -d '{"pipelineBuildId":$(Build.BuildId), "taskResult": '"$result"'}'
+    curl -X POST -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName)/taskResult -d '{"pipelineBuildId":"$(Build.BuildId)", "taskResult": '"$result"'}'
 
     if [ "$(Task_Result)" != "success" ]; then
-      codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
+      codePR=$(curl -X PATCH -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
       # exit 1
     fi
   condition: always()
   displayName: 'upload pipeline result'
 # - bash: |
-#     codePR=$(curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/depthCoverage/generatePullRequest -d '{"org":"'"$org"'", "repo":"'"$repo"'", "title":"{$(OnboardType) coverage, not merge} pull request of $(ResourceProvider)", "branch":"$(WORKBRANCH)-code", "base":"'"$base"'"}')
+#     codePR=$(curl -X POST -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/depthCoverage/generatePullRequest -d '{"org":"'"$org"'", "repo":"'"$repo"'", "title":"{$(OnboardType) coverage, not merge} pull request of $(ResourceProvider)", "branch":"$(WORKBRANCH)-code", "base":"'"$base"'"}')
 #   displayName: 'update code generation status'

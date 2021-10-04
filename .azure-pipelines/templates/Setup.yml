@@ -10,7 +10,7 @@ stages:
       TASK_KEY: config
     steps:
     - bash: |
-        codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}')
+        codePR=$(curl -X PATCH -H "Content-Type: application/json" https://sdk-pipeline.test.azure-devex-tools.com/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}')
       displayName: "update status"
     - script: |
         sudo npm install -g depthcoverage --unsafe-perm=true --allow-root
