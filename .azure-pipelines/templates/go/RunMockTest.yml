@@ -1,30 +1,47 @@
 steps:
 - bash: |
+    pwd
+    ls -l
+
+    autorestConfigFile=$(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.go.md
+    modules=($(grep -i "module-name:\s" "$autorestConfigFile"))
+    for (( i=1; i<${#modules[@]}; i+=2 ));
+    do
+      sep=(${modules[$i]//// })
+      if [ $i -eq 1 ]; then
+        rpAndPackages="${sep[2]} ${sep[3]//$'\r'}"
+      else
+        rpAndPackages="$rpAndPackages ${sep[3]//$'\r'}"
+      fi
+    done
+    
+    echo "RP name and packages' name: $rpAndPackages"
+    echo "##vso[task.setvariable variable=rpAndPackages]$rpAndPackages"
+  displayName: 'Get RP and package name'
+- bash: |
     set -x
-    cd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)
-    echo $GOPATH
-    echo $GOROOT
-    export AZURE_CLIENT_ID=$(SERVICE_PRINCIPE_ID)
-    export AZURE_CLIENT_SECRET=$(SERVICE_PRINCIPE_SECRET)
-    export SUBSCRIPTION_ID=$(SERVICE_PRINCIPE_SUBSCRIPTION)
-    export AZURE_TENANT_ID=$(SERVICE_PRINCIPE_TENANT)
+    rpAndPackages=($(rpAndPackages))
+    for (( i=1; i<${#rpAndPackages[@]}; i++ ));
+    do
+      cd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/resourcemanager/${rpAndPackages[0]}/${rpAndPackages[$i]}
+      echo $GOPATH
+      echo $GOROOT
+      export AZURE_CLIENT_ID=$(SERVICE_PRINCIPE_ID)
+      export AZURE_CLIENT_SECRET=$(SERVICE_PRINCIPE_SECRET)
+      export SUBSCRIPTION_ID=$(SERVICE_PRINCIPE_SUBSCRIPTION)
+      export AZURE_TENANT_ID=$(SERVICE_PRINCIPE_TENANT)
 
-    go get gotest.tools/gotestsum
-    ls -l $(Pipeline.Workspace)/s/go/bin
+      go get gotest.tools/gotestsum
+      ls -l $(Pipeline.Workspace)/s/go/bin
 
-    go get github.com/Azure/azure-sdk-for-go/sdk/armcore@v0.8.0
-    go get github.com/Azure/azure-sdk-for-go/sdk/azcore@v0.16.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@v0.9.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/to@v0.1.4
-    go get golang.org/x/net@v0.0.0-20201110031124-69a78807bb2b
-    go mod tidy
-    go get github.com/Azure/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)
-    $(Pipeline.Workspace)/s/go/bin/gotestsum --format testname -- -coverprofile cover.out 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    if [ "$?" != "0" ]; then
-      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Go Mock Test failed"
-      az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c depthcoverage -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
-      echo "##vso[task.setvariable variable=Task_Result]failure"
-      exit 1
-    fi
+      go mod tidy
+      $(Pipeline.Workspace)/s/go/bin/gotestsum --format testname -- -coverprofile cover.out 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+      if [ "$?" != "0" ]; then
+        echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Go Mock Test failed"
+        az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+        az storage blob upload -c depthcoverage -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+        echo "##vso[task.setvariable variable=Task_Result]failure"
+        exit 1
+      fi
+    done
   displayName: 'Mock Test'
