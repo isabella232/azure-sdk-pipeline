@@ -2,7 +2,7 @@ steps:
 - template: VariableSetTask.yml
 - template: EnvSetup.yml
   parameters:
-    checkout: ${{variables.CHECK_OUT}}
+    checkout: $(CHECK_OUT)
 # - script: |
 #     # npm install -g publish-sdkcodgen-pipeline-result
 #     echo $pwd
