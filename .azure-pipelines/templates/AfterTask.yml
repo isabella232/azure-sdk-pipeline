@@ -2,6 +2,12 @@ parameters:
 - name: subTaskKey
   type: string
   default: ''
+- name: publishArtifact
+  type: boolean
+  default: false
+- name: checkout
+  type: boolean
+  default: false
 
 steps:
 # - script: |
@@ -12,6 +18,22 @@ steps:
 #     az storage blob upload -c depthcoverage -f $(TARGET)-$(ResourceProvider)-generated.tar.gz -n $(TARGET)/$(TARGET)-$(ResourceProvider)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
 #   condition: always()
 #   displayName: 'After $(TASK_KEY)'
+- bash: |
+    cd $(Pipeline.Workspace)/s
+    tar -czvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz $(Artifact)
+    az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+    az storage blob upload -c depthcoverage -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+  condition: ${{ parameters.publishArtifact }}
+  displayName: 'publish artifact'
+- ${{ if parameters.checkout }}:
+  - template: PushCodeToRepo.yml
+    parameters:
+      sdkRepoName: $(SDK_REPO_NAME)
+      branchName: $(WORKBRANCH)
+  - template: PushCodeToRepo.yml
+    parameters:
+      sdkRepoName: $(SPEC_REPO_NAME)
+      branchName: $(WORKBRANCH)
 - bash: |
     pwd
     ls -l
@@ -41,6 +63,7 @@ steps:
     fi
   condition: always()
   displayName: 'upload pipeline result'
+
 # - bash: |
 #     codePR=$(curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/depthCoverage/generatePullRequest -d '{"org":"'"$org"'", "repo":"'"$repo"'", "title":"{$(OnboardType) coverage, not merge} pull request of $(ResourceProvider)", "branch":"$(WORKBRANCH)-code", "base":"'"$base"'"}')
 #   displayName: 'update code generation status'

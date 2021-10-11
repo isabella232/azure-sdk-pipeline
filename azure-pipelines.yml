@@ -37,6 +37,8 @@ variables:
   value: ""
 - name: Task_Result
   value: "success"
+- name: CHECK_OUT
+  value: false
 stages:
 - template: .azure-pipelines/templates/Setup.yml
 - stage: GenerateCode
@@ -90,6 +92,8 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
       - template: .azure-pipelines/templates/${{variables.SDK}}/Build.yml
       - template: .azure-pipelines/templates/AfterTask.yml
+        parameters:
+          publishArtifact: true
     - job: BuildFailureAlert
       dependsOn: build
       condition: failed()
