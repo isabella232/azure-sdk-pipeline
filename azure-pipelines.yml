@@ -69,8 +69,11 @@ stages:
     #     ls -l /home/vsts/work
     #     node /home/vsts/work/node_modules/publish-sdkcodgen-pipeline-result/dist/sdk-code-generate.js
     #   displayName: "upload pipeline result"
-    - template: .azure-pipelines/templates/UploadCode.yml
+    # - template: .azure-pipelines/templates/UploadCode.yml
     - template: .azure-pipelines/templates/AfterTask.yml
+      parameters:
+        publishArtifact: true
+        checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
   - job: CodeGenerationFailureAlert
     condition: failed()
     variables:
@@ -90,10 +93,13 @@ stages:
         Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
       steps:
       - template: .azure-pipelines/templates/BeforeTask.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       - template: .azure-pipelines/templates/${{variables.SDK}}/Build.yml
       - template: .azure-pipelines/templates/AfterTask.yml
         parameters:
           publishArtifact: true
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
     - job: BuildFailureAlert
       dependsOn: build
       condition: failed()
@@ -119,6 +125,8 @@ stages:
         Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
       steps:
       - template: .azure-pipelines/templates/BeforeTask.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
       - template: .azure-pipelines/templates/${{variables.SDK}}/SetupMockServerEnv.yml
       - template: .azure-pipelines/templates/${{variables.SDK}}/RunMockTest.yml
@@ -148,6 +156,8 @@ stages:
       steps:
       - script: echo 'CLILiveTest'
       - template: .azure-pipelines/templates/BeforeTask.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
       - template: .azure-pipelines/templates/${{variables.SDK}}/RunLiveTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
