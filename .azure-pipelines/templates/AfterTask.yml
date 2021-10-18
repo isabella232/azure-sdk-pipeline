@@ -22,11 +22,11 @@ steps:
   displayName: 'upload log'
 - bash: |
     set -x
-    npm install publish-sdkcodgen-pipeline-result
+    npm install -g codegenapp
     pwd
     ls -l
     ls -l /home/vsts/work
-    node /home/vsts/work/node_modules/publish-sdkcodgen-pipeline-result/dist/Logger/index.js --codegen=$(CodeGenerationName) --pipelineBuildId=$(Build.BuildId) --task=$(TASK_KEY) --status=completed --result=$(Task_Result) --logfile=$(TASK_KEY).log --pipelineLog=pipe.log
+    publish-codegen-pipeline-result --codegen=$(CodeGenerationName) --pipelineBuildId=$(Build.BuildId) --task=$(TASK_KEY) --status=completed --result=$(Task_Result) --logfile=$(TASK_KEY).log --pipelineLog=pipe.log
     az storage blob upload -c sdk-pipeline -f pipe.log -n log/$(Build.BuildId)/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-result.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
 
     # publish result to cosmos db
