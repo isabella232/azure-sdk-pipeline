@@ -32,7 +32,7 @@ if (startTLS) {
 
 var subject = "CodeGen Alert";
 var body = "Hello world";
-var to = "chunyu@microsoft.com";
+var to = "sdkautomationpipeline@outlook.com";
 var from = "codegenapp@hotmail.com";
 
 var stransporter = nodemailer.createTransport(config);
