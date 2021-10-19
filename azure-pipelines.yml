@@ -127,9 +127,7 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
         parameters:
           checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupMockServerEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/RunMockTest.yml
+      - template: .azure-pipelines/templates/MockTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
       displayName: MockTest
     - job: MockTestFailureAlert
