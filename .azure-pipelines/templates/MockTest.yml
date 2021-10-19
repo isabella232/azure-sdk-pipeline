@@ -1,0 +1,30 @@
+steps:
+- bash: |
+    az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+    az storage blob download -c avs -f virtualservice-0.1.1.tgz -n virtualservice-0.1.1.tgz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=amecodegenstorage
+    tar -xzvf virtualservice-0.1.1.tgz
+    sudo cp package/localhost-ca.crt /usr/local/share/ca-certificates/
+    sudo update-ca-certificates
+    
+    cd package
+    npm install
+    . initiate.sh
+    tsc
+    sudo node dist/src/main.js 1>$(Pipeline.Workspace)/s/mockserver.log 2>&1 &
+    # sudo node dist/src/main.js &
+    sleep 3m
+
+    ps -eaf |grep node
+    netstat -l
+  displayName: 'Run Mock Server'
+- bash: |
+    bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    if [ "$?" != "0" ]; then
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
+      # upload error log
+      az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+      az storage blob upload -c depthcoverage -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+      echo "##vso[task.setvariable variable=Task_Result]failure"
+      exit 1
+    fi
+  displayName: 'Mock Test'
