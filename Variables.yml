@@ -15,3 +15,8 @@ variables:
   SDK_REPO_NAME: azure-sdk-for-go
   README_FILE_GITHUB_URL_WITH_COMMIT: >-
     https://github.com/chunyu3/azure-rest-api-specs/blob/d9406065cea2f2384b55076f8294f81a76e3241f/specification/agrifood/resource-manager/readme.md
+  CODEGEN_REPO_TYPE: "[[CODEGEN_REPO_TYPE]]"
+  CODEGEN_REPO_URL: "[[CODEGEN_REPO_URL]]"
+  CODEGEN_REPO_BASE_BRANCH: "[[CODEGEN_REPO_BASE_BRANCH]]"
+  CODEGEN_REPO_OWNER: "[[codegenRepoOwner]]"
+  CODEGEN_REPO_NAME: "[[codegenRepoName]]"

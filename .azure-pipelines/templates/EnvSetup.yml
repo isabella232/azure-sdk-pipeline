@@ -6,11 +6,28 @@ steps:
 - ${{ if not(parameters.checkout) }}:
     - bash: |
         az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-        az storage blob download -c depthcoverage -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
-        tar -xzvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -C generated/
+        az storage blob download -c sdk-pipeline -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+        tar -xzvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -C ./
         ls -l ./
       displayName: 'download artifact'
 - ${{ else }}:
     - bash: |
         git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
       displayName: 'pull repo'
+- task: GoTool@0
+  inputs:
+    version: '1.16.x'
+    goPath: '/home/vsts/work/1/s/go'
+    goBin: '/home/vsts/work/1/s/go/bin'
+- bash: |
+    export GOPATH=/home/vsts/work/1/s/go
+    export GOROOT=/home/vsts/work/1/s/go/bin
+    # go get golang.org/x/tools/cmd/goimports
+    sudo apt install golang-golang-x-tools -y
+  displayName: 'setup Go environment'
+- bash: |
+    export AZURE_CLIENT_ID=$(SERVICE_PRINCIPE_ID)
+    export AZURE_CLIENT_SECRET=$(SERVICE_PRINCIPE_SECRET)
+    export SUBSCRIPTION_ID=$(SERVICE_PRINCIPE_SUBSCRIPTION)
+    export AZURE_TENANT_ID=$(SERVICE_PRINCIPE_TENANT)
+  displayName: 'setup env'

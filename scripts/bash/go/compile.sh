@@ -1,6 +1,5 @@
 #!/bin/bash
 
-cd $CODEPATH
 if [ -z $1 ]; then
     echo "Please input code path"
 fi

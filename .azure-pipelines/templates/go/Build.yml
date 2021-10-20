@@ -12,7 +12,7 @@ steps:
     cd azure-sdk-for-go
     # export GOPATH=/home/vsts/work/1/s/go
     # echo $GOPATH
-    git config credential.helper store ; git config --global user.email "chunyu@microsoft.com";git config --global user.name "chunyu3"
+    git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot"
   displayName: 'pull repo'
 - bash: |
     cd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)

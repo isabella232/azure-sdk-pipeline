@@ -1,10 +1,25 @@
 #!/bin/bash
+if [ -z $1 ]; then
+    echo "Please input resource provider name"
+fi
+ResourceProvider=$1
+
+if [ -z $2 ]; then
+    echo "Please input swagger folder path"
+fi
+SWAGGER_PATH=$2
+
+if [ -z $3 ]; then
+    echo "Please input sdk output folder path"
+fi
+SDK_PATH=$3
 
 # Generate readme config file.
-FILE=$(Pipeline.Workspace)/s/specification/$(ResourceProvider)/resource-manager/readme.go.md
+cd $SWAGGER_PATH
+FILE=$SWAGGER_PATH/specification/$ResourceProvider/resource-manager/readme.go.md
 if [ -f "$FILE" ]; then
     echo "$FILE exists."
-    cp "$FILE" $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.go.md
+    cp "$FILE" $SWAGGER_PATH/specification/$ResourceProvider/resource-manager/readme.go.md
 fi
 
 if [ "$?" != "0" ]; then
@@ -19,25 +34,20 @@ else
 fi
 
 # Generate Go-SDK
-tag=$(TAG)
-moduleName="sdk/$(ResourceProvider)/arm$(ResourceProvider)"
+tag=$TAG
+moduleName="sdk/$ResourceProvider/arm$ResourceProvider"
 module="github.com/Azure/azure-sdk-for-go/$moduleName"
-gosdkfolder="$(Pipeline.Workspace)/s/azure-sdk-for-go"
-outputfolder="$gosdkfolder/$moduleName"
+outputfolder="$SDK_PATH/$moduleName"
 if [ "$tag" == "" ]; then
-    autorest --use=@autorest/go@4.0.0-preview.24 --go --track2 --go-sdk-folder=$gosdkfolder --module=$module --output-folder=$outputfolder --azure-arm=true --file-prefix="zz_generated_" --clear-output-folder=false $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md
+    npx autorest --use=@autorest/go@4.0.0-preview.28 --go --track2 --go-sdk-folder=$SDK_PATH --module=$module --output-folder=$outputfolder --azure-arm=true --file-prefix="zz_generated_" --clear-output-folder=false --module-version="0.0.1" $SWAGGER_PATH/specification/$ResourceProvider/resource-manager/readme.md
 else
-    autorest --use=@autorest/go@4.0.0-preview.24 --go --track2 --tag=$(TAG) --go-sdk-folder=$gosdkfolder --module=$module --output-folder=$outputfolder --azure-arm=true --file-prefix="zz_generated_" --clear-output-folder=false $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md
+    npx autorest --use=@autorest/go@4.0.0-preview.28 --go --track2 --tag=$TAG --go-sdk-folder=$SDK_PATH --module=$module --output-folder=$outputfolder --azure-arm=true --file-prefix="zz_generated_" --clear-output-folder=false --module-version="0.0.1" $SWAGGER_PATH/specification/$ResourceProvider/resource-manager/readme.md
 fi
 
 if [ "$?" != "0" ]; then
-    echo -e "\e[31m[$(date -u)] ERROR: [$OPERATION : $(ResourceProvider)]: Generate go sdk failed"
-    az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-    az storage blob upload -c depthcoverage -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
-    echo "##vso[task.setvariable variable=Task_Result]failure"
+    echo -e "\e[31m[$(date -u)] ERROR: [$OPERATION : $ResourceProvider]: Generate go sdk failed"
     exit 1
 fi
 
 #Generate Go-SDK Mock test
-cd $(Pipeline.Workspace)/s
-autorest --version=3.2.1 --use=https://amecodegenstorage.blob.core.windows.net/tools/autorest-tests-0.1.0-preview.tgz $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md --use=@autorest/go@4.0.0-preview.24 --file-prefix="zz_generated_" --track2 --go --output-folder=$outputfolder
+npx autorest --version=3.2.1 --use=https://amecodegenstorage.blob.core.windows.net/tools/autorest-tests-0.1.0-preview.tgz $SWAGGER_PATH/specification/$ResourceProvider/resource-manager/readme.md --use=@autorest/go@4.0.0-preview.24 --file-prefix="zz_generated_" --track2 --go --output-folder=$outputfolder

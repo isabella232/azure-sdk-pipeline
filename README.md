@@ -41,7 +41,7 @@ If owner wants to customize, please following following steps:
 <li> click 'Customize' to re-trigger the code generation pipeline. In this round of pipeline, your customization will be included in the generated code. If you just want to generate the code, and don't want to run test, click 'Customize without Test' link.
 
 ## storage blob ##
-The generated code and logs are stored in Azure stroage blob: depthcoverage/depthcoverage
+The generated code and logs are stored in Azure stroage blob: sdkpipeline/sdk-pipeline
 
 https://ms.portal.azure.com/#blade/Microsoft_Azure_Storage/ContainerMenuBlade/overview/storageAccountId/%2Fsubscriptions%2F7fd08dcc-a653-4b0f-8f8c-4dac889fdda4%2FresourceGroups%2Ftrenton%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fdepthcoverage/path/depthcoverage/etag/%220x8D8C3F7E45F943F%22/defaultEncryptionScope/%24account-encryption-key/denyEncryptionScopeOverride//defaultId//publicAccessVal/Container
 

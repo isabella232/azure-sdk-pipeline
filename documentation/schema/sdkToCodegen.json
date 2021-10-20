@@ -6,6 +6,6 @@
     },
     "tasks": {
         "type": "array",
-        "item": "$ref: '#taskSchema.json' "
+        "item": "$ref: './taskSchema.json' "
     }
 }

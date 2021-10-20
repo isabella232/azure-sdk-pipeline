@@ -15,14 +15,14 @@ steps:
 #     # tar -czvf $(TARGET)-$(ResourceProvider)-generated.tar.gz generated/$(ResourceProvider)
 #     tar -czvf $(TARGET)-$(ResourceProvider)-generated.tar.gz $(Artifact)
 #     az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-#     az storage blob upload -c depthcoverage -f $(TARGET)-$(ResourceProvider)-generated.tar.gz -n $(TARGET)/$(TARGET)-$(ResourceProvider)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+#     az storage blob upload -c sdk-pipeline -f $(TARGET)-$(ResourceProvider)-generated.tar.gz -n $(TARGET)/$(TARGET)-$(ResourceProvider)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
 #   condition: always()
 #   displayName: 'After $(TASK_KEY)'
 - bash: |
     cd $(Pipeline.Workspace)/s
     tar -czvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz $(Artifact)
     az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-    az storage blob upload -c depthcoverage -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+    az storage blob upload -c sdk-pipeline -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
   condition: ${{ parameters.publishArtifact }}
   displayName: 'publish artifact'
 - ${{ if parameters.checkout }}:
@@ -39,17 +39,17 @@ steps:
     ls -l
     tar -czvf $(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-log.tar.gz *.log
     az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-    az storage blob upload -c depthcoverage -f $(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-log.tar.gz -n log/$(Build.BuildId)/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-log.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+    az storage blob upload -c sdk-pipeline -f $(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-log.tar.gz -n log/$(Build.BuildId)/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-log.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
   condition: always()
   displayName: 'upload log'
 - bash: |
     set -x
-    npm install publish-sdkcodgen-pipeline-result
+    npm install -g codegenapp
     pwd
     ls -l
     ls -l /home/vsts/work
-    node /home/vsts/work/node_modules/publish-sdkcodgen-pipeline-result/dist/Logger/index.js --codegen=$(CodeGenerationName) --pipelineBuildId=$(Build.BuildId) --task=$(TASK_KEY) --status=completed --result=$(Task_Result) --logfile=$(TASK_KEY).log --pipelineLog=pipe.log
-    az storage blob upload -c depthcoverage -f pipe.log -n log/$(Build.BuildId)/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-result.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+    publish-codegen-pipeline-result --codegen=$(CodeGenerationName) --pipelineBuildId=$(Build.BuildId) --task=$(TASK_KEY) --status=completed --result=$(Task_Result) --logfile=$(TASK_KEY).log --pipelineLog=pipe.log
+    az storage blob upload -c sdk-pipeline -f pipe.log -n log/$(Build.BuildId)/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY)-result.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
 
     # publish result to cosmos db
     sudo apt-get install jq -y
@@ -59,11 +59,11 @@ steps:
 
     if [ "$(Task_Result)" != "success" ]; then
       codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
+
+      #upload error log file.
+      az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
       # exit 1
     fi
   condition: always()
   displayName: 'upload pipeline result'
-
-# - bash: |
-#     codePR=$(curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/depthCoverage/generatePullRequest -d '{"org":"'"$org"'", "repo":"'"$repo"'", "title":"{$(OnboardType) coverage, not merge} pull request of $(ResourceProvider)", "branch":"$(WORKBRANCH)-code", "base":"'"$base"'"}')
-#   displayName: 'update code generation status'

@@ -48,10 +48,12 @@ stages:
   - job: GenerateJob
     variables:
       TASK_KEY: GenerateCode
-      Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+      Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
     steps:
-    - template: .azure-pipelines/templates/VariableSetTask.yml
-    - template: .azure-pipelines/templates/${{variables.SDK}}/GenerateCode.yml
+    - template: .azure-pipelines/templates/BeforeTask.yml
+      parameters:
+        checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+    - template: .azure-pipelines/templates/GenerateCode.yml
     # - bash: |
     #     sdktarget=$(TARGET)
     #     if [ "$sdktarget" == "terraform" ]; then
@@ -69,13 +71,16 @@ stages:
     #     ls -l /home/vsts/work
     #     node /home/vsts/work/node_modules/publish-sdkcodgen-pipeline-result/dist/sdk-code-generate.js
     #   displayName: "upload pipeline result"
-    - template: .azure-pipelines/templates/UploadCode.yml
+    # - template: .azure-pipelines/templates/UploadCode.yml
     - template: .azure-pipelines/templates/AfterTask.yml
+      parameters:
+        publishArtifact: true
+        checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
   - job: CodeGenerationFailureAlert
     condition: failed()
     variables:
       TASK_KEY: CodeGenerationnFailureAlert
-      Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+      Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
     steps:
     - template: .azure-pipelines/templates/VariableSetTask.yml
     - template: .azure-pipelines/templates/IssueAlertTask.yml
@@ -87,19 +92,22 @@ stages:
     - job: build
       variables:
         TASK_KEY: Build
-        Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
       steps:
       - template: .azure-pipelines/templates/BeforeTask.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/Build.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+      - template: .azure-pipelines/templates/Build.yml
       - template: .azure-pipelines/templates/AfterTask.yml
         parameters:
           publishArtifact: true
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
     - job: BuildFailureAlert
       dependsOn: build
       condition: failed()
       variables:
         TASK_KEY: BuildFailureAlert
-        Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
       steps:
       - template: .azure-pipelines/templates/VariableSetTask.yml
       - template: .azure-pipelines/templates/GenerateCodePR.yml
@@ -116,18 +124,18 @@ stages:
     - job: MockTestJob
       variables:
         TASK_KEY: MockTest
-        Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
       steps:
       - template: .azure-pipelines/templates/BeforeTask.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupMockServerEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/RunMockTest.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+      - template: .azure-pipelines/templates/MockTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
       displayName: MockTest
     - job: MockTestFailureAlert
       variables:
         TASK_KEY: MockTestFailureAlert
-        Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
       dependsOn:
       - MockTestJob
       condition: failed('MockTestJob')
@@ -148,6 +156,8 @@ stages:
       steps:
       - script: echo 'CLILiveTest'
       - template: .azure-pipelines/templates/BeforeTask.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
       - template: .azure-pipelines/templates/${{variables.SDK}}/RunLiveTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
@@ -155,7 +165,7 @@ stages:
     - job: LiveTestFailureAlert
       variables:
         TASK_KEY: LiveTestFailureAlert
-        Contactors: "chunyu@microsoft.com;vsccodegen@microsoft.com"
+        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
       dependsOn:
       - LiveTestJob
       condition: failed('LiveTestJob')
@@ -177,19 +187,9 @@ stages:
           pwd
 
           echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-          sdktarget=$(TARGET)
-          if [ "$sdktarget" == "terraform" ]; then
-            git clone --branch $(OnboardType)-$(TARGET)-$(ResourceProvider) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(TF_ORG)/terraform-provider-azurerm.git
-            cd ./terraform-provider-azurerm
-          fi
-
-          if [ "$sdktarget" == "clicore" ] || [ "$sdktarget" == "cliextension" ]; then
-            git clone --branch $(OnboardType)-$(TARGET)-$(ResourceProvider) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(CLI_ORG)/azure-cli
-            cd ./azure-cli
-          fi
-
-          git config credential.helper store; git config --global user.email "chunyu@microsoft.com";git config --global user.name "chunyu3;"
-          git branch; git add -A; git commit -m "autogenerated"; git push origin $(OnboardType)-$(TARGET)-$(ResourceProvider);
+          git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+          git config credential.helper store; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
+          git branch; git add -A; git commit -m "autogenerated"; git push origin $(WORKBRANCH);
         displayName: 'Generate pull request'
     - job: confirm
       dependsOn: submitJob
@@ -204,40 +204,13 @@ stages:
 
           sdktarget=$(TARGET)
 
-          org=""
-          repo=""
-          base="master"
-          sdk="";
-          if [ "$sdktarget" == "terraform" ]; then
-            org=$(TF_ORG)
-            repo="terraform-provider-azurerm"
-            sdk="terraform"
-            base="pipeline"
-          fi
+          org=$(SPEC_REPO_OWNER)
+          repo=$(SPEC_REPO_NAME)
+          base=$(SPEC_REPO_BASE_BRANCH)
 
-          if [ "$sdktarget" == "clicore" ]; then
-            org=$(CLI_ORG)
-            repo="azure-cli"
-            base="dev"
-            sdk="clicore"
-          fi
-
-          if [ "$sdktarget" == "cliextension" ]; then
-            org=$(CLI_ORG)
-            repo="azure-cli-extensions"
-            base="master"
-            sdk="cliextension"
-          fi
-
-          onboardtype=$(OnboardType)
-          baseAPI="codegenerations"
-          if [ "$onboardtype" == "depth" ]; then
-            baseAPI="depthCoverage"
-          fi
-
-          triggerPR="https://github.com/Azure/depth-coverage-pipeline/pull/$(System.PullRequest.PullRequestNumber)"
-          submitURL="https://$(CodegenApp_Server)/$baseAPI/$(CodeGenerationName)/onboard"
-          customizeURL="https://$(CodegenApp_Server)/$baseAPI/resourceProvider/$(ResourceProvider)/sdk/$sdk/customize?triggerPR=$triggerPR&codePR=$codePR&org=$org"
+          triggerPR="https://github.com/$(CODEGEN_REPO_OWNER)/$(CODEGEN_REPO_NAME)/pull/$(System.PullRequest.PullRequestNumber)"
+          submitURL="https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/onboard"
+          customizeURL="https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/onboard/customize?triggerPR=$triggerPR&codePR=$codePR"
           
 
           
@@ -245,16 +218,16 @@ stages:
           echo "start of email"
           cat scripts/email.html
           echo "end of email"
-          # to_mail="chunyu@microsoft.com"
+          # to_mail="sdkautomationpipeline@outlook.com"
           if [ "$sdktarget" == "terraform" ]; then
-            to_mail="tfazengvsc@microsoft.com;chunyu@microsoft.com;vsccodegen@microsoft.com"
+            to_mail="tfazengvsc@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
           else
-            to_mail="AzCLIInternal@microsoft.com;chunyu@microsoft.com;vsccodegen@microsoft.com"
+            to_mail="AzCLIInternal@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
           fi
           plateform=$(PLATEFORM)
           echo "plateform: $plateform"
           if [ "$plateform" == "dev" ]; then
-            to_mail="chunyu@microsoft.com"
+            to_mail="sdkautomationpipeline@outlook.com"
           fi
           
           echo "to_mail: $to_mail"
