@@ -19,10 +19,8 @@ steps:
 #   condition: always()
 #   displayName: 'After $(TASK_KEY)'
 - bash: |
-    set -x
     cd $(Pipeline.Workspace)/s
     tar -czvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz $(Artifact)
-    ls -l
     az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
     az storage blob upload -c sdk-pipeline -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
   condition: ${{ parameters.publishArtifact }}
@@ -65,7 +63,3 @@ steps:
     fi
   condition: always()
   displayName: 'upload pipeline result'
-
-# - bash: |
-#     codePR=$(curl -X POST -H "Content-Type: application/json" https://$(CodegenApp_Server)/depthCoverage/generatePullRequest -d '{"org":"'"$org"'", "repo":"'"$repo"'", "title":"{$(OnboardType) coverage, not merge} pull request of $(ResourceProvider)", "branch":"$(WORKBRANCH)-code", "base":"'"$base"'"}')
-#   displayName: 'update code generation status'

@@ -6,7 +6,7 @@ steps:
 - ${{ if not(parameters.checkout) }}:
     - bash: |
         az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-        az storage blob download -c depthcoverage -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+        az storage blob download -c sdk-pipeline -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
         tar -xzvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -C ./
         ls -l ./
       displayName: 'download artifact'
