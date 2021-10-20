@@ -1,15 +1,4 @@
 steps:
-- task: GoTool@0
-  inputs:
-    version: '1.16.x'
-    goPath: '/home/vsts/work/1/s/go'
-    goBin: '/home/vsts/work/1/s/go/bin'
-- bash: |
-    export GOPATH=/home/vsts/work/1/s/go
-    export GOROOT=/home/vsts/work/1/s/go/bin
-    # go get golang.org/x/tools/cmd/goimports
-    sudo apt install golang-golang-x-tools -y
-  displayName: 'setup Go environment'
 - bash: |
     #pull swagger repo
     cd $(Pipeline.Workspace)/s
