@@ -23,7 +23,9 @@ steps:
     displayName: 'create swagger work branch'
 - bash: |
     set -x
-    bash ./scripts/bash/$(SDK)/GenerateCode.sh $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    # bash ./scripts/bash/$(SDK)/GenerateCode.sh $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    cmd=`node node/TaskEngine.js`
+    $cmd $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
