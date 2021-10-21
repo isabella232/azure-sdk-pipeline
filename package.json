@@ -1,0 +1,44 @@
+{
+  "name": "azure-sdk-pipeline",
+  "private": true,
+  "author": {
+    "name": "Microsoft Corporation",
+    "email": "azsdkteam@microsoft.com",
+    "url": "https://github.com/azure/azure-sdk-pipeline"
+  },
+  "version": "0.1.0",
+  "description": "Pipeline for Azure SDK Generation",
+  "license": "MIT",
+  "dependencies": {},
+  "homepage": "https://github.com/azure/azure-rest-api-specs-pipeline",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:azure/azure-rest-api-specs-pipeline.git"
+  },
+  "bugs": {
+    "url": "http://github.com/azure/azure-rest-api-specs-pipeline/issues"
+  },
+  "scripts": {
+    "spellcheck": "ts-node ./scripts/spellcheck.ts",
+    "prettier-check": "ts-node ./scripts/prettier-check.ts",
+    "prettier-fix": "prettier --write specification/**/*.json",
+    "prettier": "prettier",
+    "tsc": "tsc",
+    "multiapi": "ts-node ./scripts/multiapi.ts",
+    "build": "tsc"
+  },
+  "files": [
+    "scripts/**/*",
+    "config/**/*"
+  ],
+  "devDependencies": {
+    "@types/convict": "^5.2.0",
+    "@types/fs-extra": "^9.0.1",
+    "@types/moment": "~2.13.0",
+    "@types/node": "^16.11.1",
+    "@types/nodegit": "^0.26.11",
+    "@types/rimraf": "^3.0.0",
+    "mocha": "~8.3.2",
+    "ts-node": "9.0.0"
+  }
+}

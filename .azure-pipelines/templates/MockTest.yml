@@ -18,7 +18,10 @@ steps:
     netstat -l
   displayName: 'Run Mock Server'
 - bash: |
-    bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    set -x
+    # bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    cmd=`node dist/TaskEngine.js "config.json" "MockTest" "$(SDK)"`
+    $cmd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"

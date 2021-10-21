@@ -5,6 +5,12 @@ stages:
   #   steps:
   #   - script: |
   #       curl -X GET http://10.172.15.142:3000
+  - job: buildPipeline
+    steps:
+    - bash: |
+        npm install
+        npm run build
+      displayName: 'Build pipeline'
   - job: config
     variables:
       TASK_KEY: config

@@ -3,6 +3,11 @@ parameters:
   type: boolean
   default: false
 steps:
+- bash: |
+    npm install
+    npm run build
+    ls -l
+  displayName: 'Build pipeline'
 - ${{ if not(parameters.checkout) }}:
     - bash: |
         az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
