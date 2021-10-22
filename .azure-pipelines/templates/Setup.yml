@@ -11,6 +11,9 @@ stages:
         npm install
         npm run build
       displayName: 'Build pipeline'
+    - bash: |
+        node dist/SetupPipeline.js $(SDK_REPO_OWNER) $(SDK_REPO_NAME) $(SDK_REPO_BASE_BRANCH)
+      displayName: 'prepare pipeline runtime'
   - job: config
     variables:
       TASK_KEY: config
