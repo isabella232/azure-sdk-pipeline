@@ -9,7 +9,10 @@
   "version": "0.1.0",
   "description": "Pipeline for Azure SDK Generation",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@azure/logger-js": "^1.3.2",
+    "@ts-common/azure-js-dev-tools": "^22.5.1"
+  },
   "homepage": "https://github.com/azure/azure-rest-api-specs-pipeline",
   "repository": {
     "type": "git",

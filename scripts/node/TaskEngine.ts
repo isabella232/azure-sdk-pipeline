@@ -37,13 +37,17 @@ const ExecuteTask = async (confFile: string, taskname: string, sdk: string, para
 
 }
 
-// console.log(process.argv);
-const confFile = process.argv[2];
-const taskname = process.argv[3];
-const sdk = process.argv[4];
-const paramters = process.argv.slice(5);
-// console.log("confFile:" + confFile + ", taskname:" + taskname + ", sdk:" + sdk);
-const ret = GetTaskCmd(confFile, taskname, sdk, paramters);
-console.log(ret);
-// process.stdout.write(ret);
-// ExecuteTask(confFile, taskname, sdk, {});
+const main = () => {
+    // console.log(process.argv);
+    const confFile = process.argv[2];
+    const taskname = process.argv[3];
+    const sdk = process.argv[4];
+    const paramters = process.argv.slice(5);
+    // console.log("confFile:" + confFile + ", taskname:" + taskname + ", sdk:" + sdk);
+    const ret = GetTaskCmd(confFile, taskname, sdk, paramters);
+    console.log(ret);
+    // process.stdout.write(ret);
+    // ExecuteTask(confFile, taskname, sdk, {});
+}
+
+main();

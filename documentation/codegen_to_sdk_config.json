@@ -1,0 +1,51 @@
+{
+    "checkoutSDKRepo": false,
+    "tasks": [
+        {
+            "name": "GenerateCode",
+            "script": "bash",
+            "path": "scripts/generate_code.sh",
+            "paramter": {
+                "sdk": "go",
+                "inputConfigfile":"src/swaggerDir",
+                "outputfile": "src/SDKDir"
+            },
+            "output": {
+                "log": "generateCode.log",
+                "package": "src/SDKDir/compute.zip"
+            },
+            "resultParseCriterion": {
+                "stderr": {
+                    "prefix": {
+                        "FATAL": 1,
+                        "Exception": 3,
+                        "Error": 1
+                    },
+                    "ignore": [
+                        "[WARNING]"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "MockTest",
+            "script": "bash",
+            "path": "scripts/mock_test.sh",
+            "paramter": {
+                "inputfile": "src/SDKDir"
+            },
+            "resultParseCriterion": {
+                "stderr": {
+                    "perfix":{
+                        "FATAL": 1,
+                        "Exception": 3,
+                        "Error": "1"
+                    }
+                },
+                "apiCoverage": {
+                    "pattern": "Coverage: %*"
+                }
+            }
+        }
+    ]
+}

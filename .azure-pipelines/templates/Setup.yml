@@ -11,6 +11,9 @@ stages:
         npm install
         npm run build
       displayName: 'Build pipeline'
+    - bash: |
+        node dist/SetupPipeline.js $(SDK)
+      displayName: 'prepare pipeline runtime'
   - job: config
     variables:
       TASK_KEY: config
