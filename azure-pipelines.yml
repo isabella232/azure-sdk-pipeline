@@ -37,6 +37,8 @@ variables:
   value: ""
 - name: Task_Result
   value: "success"
+- name: CODEGEN_TO_SDK_CONFIG
+  value: codegen_to_sdk_config.json
 - name: CHECK_OUT
   value: false
 stages:
