@@ -28,7 +28,7 @@ steps:
     # echo "cmd:$cmd"
     # $cmd $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs "$(ResourceProvider)" $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
 
-    cmd=`node dist/TaskEngine.js "config.json" "GenerateCode" "$(SDK)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/azure-sdk-for-go"`
+    cmd=`node dist/TaskEngine.js "config.json" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/azure-sdk-for-go"`
     echo "cmd:$cmd"
     $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
 
