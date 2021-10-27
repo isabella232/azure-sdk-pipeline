@@ -3,13 +3,13 @@ import { exec } from "child_process";
 const fs = require('fs');
 
 const GetTaskCmd = (confFile, taskname, sdk, paramers:string[]) => {
-    let cmd: string = `sh scripts/bash/${sdk}/${taskname}.sh`;
+    let cmd: string = `bash scripts/bash/${sdk}/${taskname}.sh`;
     if (fs.existsSync(confFile)) {
         const content = fs.readFileSync(confFile, 'utf-8');
         var sdkconfig = JSON.parse(content);
         for (var task of sdkconfig.tasks) {
             if (task['name'] === taskname) {
-                cmd = `/bin/${task['script']} ${task['path']}`
+                cmd = `${task['script']} ${task['path']}`
                 break;
             }
         }
@@ -42,12 +42,9 @@ const main = async () => {
     const taskname = process.argv[3];
     const sdk = process.argv[4];
     const paramters = process.argv.slice(5);
-    // const ret = GetTaskCmd(confFile, taskname, sdk, paramters);
-    // console.log(ret);
+    const ret = GetTaskCmd(confFile, taskname, sdk, paramters);
+    console.log(ret);
     // const {err, stdout, stderr} = ExecuteTask(confFile, taskname, sdk, paramters);
-    await ExecuteTask(confFile, taskname, sdk, paramters);
-
-
 }
 
 main();

@@ -28,10 +28,9 @@ steps:
     # echo "cmd:$cmd"
     # $cmd $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs "$(ResourceProvider)" $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
 
-    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)s" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/azure-sdk-for-go"`
+    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)"`
     echo "cmd:$cmd"
-    # $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    $cmd
+    $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
