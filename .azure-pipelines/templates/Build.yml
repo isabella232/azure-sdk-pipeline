@@ -2,7 +2,7 @@ steps:
 - bash: |
     set -x
     # bash ./scripts/bash/$(SDK)/Build.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    cmd=`node dist/TaskEngine.js "config.json" "Build" "$(SDK)"`
+    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "Build" "$(SDK)"`
     $cmd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
