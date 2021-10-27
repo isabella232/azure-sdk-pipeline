@@ -30,8 +30,9 @@ steps:
 
     cmd=`node dist/TaskEngine.js "config.json" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/azure-sdk-for-go"`
     echo "cmd:$cmd"
-    $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-
+    # $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    $cmd
+    
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
