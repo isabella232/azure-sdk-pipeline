@@ -9,9 +9,9 @@ variables:
   SPEC_REPO_OWNER: Azure
   SPEC_REPO_NAME: azure-rest-api-specs
   SDK_REPO_TYPE: github
-  SDK_REPO_URL: github.com/dw511214992/azure-sdk-for-js
+  SDK_REPO_URL: github.com/Azure/azure-sdk-for-js
   SDK_REPO_BASE_BRANCH: dw/pipeline-test
-  SDK_REPO_OWNER: dw511214992
+  SDK_REPO_OWNER: Azure
   SDK_REPO_NAME: azure-sdk-for-js
   README_FILE_GITHUB_URL_WITH_COMMIT: >-
     https://github.com/Azure/azure-rest-api-specs/blob/920e768c481b65d930d76700f55b2be8bc5acada/specification/msi/resource-manager/readme.md
