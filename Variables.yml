@@ -2,7 +2,7 @@ variables:
   CodeGenerationName: dw20
   SDK: javascript
   SERVICE_TYPE: resource-manager
-  stages: Setup;GenerateCode;MockTest;LiveTest
+  stages: Setup;GenerateCode;MockTest
   SPEC_REPO_TYPE: github
   SPEC_REPO_URL: github.com/Azure/azure-rest-api-specs
   SPEC_REPO_BASE_BRANCH: main
