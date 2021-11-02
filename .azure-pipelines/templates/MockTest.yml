@@ -5,7 +5,7 @@ steps:
     tar -xzvf virtualservice-0.1.1.tgz
     sudo cp package/localhost-ca.crt /usr/local/share/ca-certificates/
     sudo update-ca-certificates
-    
+
     cd package
     npm install
     . initiate.sh
@@ -22,14 +22,14 @@ steps:
     echo "$AZURE_CLIENT_ID"
     # bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "MockTest" "$(SDK)"`
-    $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Mock Test failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi
   displayName: 'Mock Test'
-  env: 
+  env:
     {
       "AZURE_CLIENT_ID": "$(SERVICE_PRINCIPE_ID)",
       "AZURE_CLIENT_SECRET": "$(SERVICE_PRINCIPE_SECRET)",

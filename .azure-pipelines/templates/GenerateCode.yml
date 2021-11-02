@@ -35,8 +35,8 @@ steps:
       exit 1
     fi
     echo "cmd:$cmd"
-    $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    
+    $cmd |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
+
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
