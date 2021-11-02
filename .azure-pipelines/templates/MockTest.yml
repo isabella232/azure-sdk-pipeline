@@ -22,6 +22,7 @@ steps:
     echo "$AZURE_CLIENT_ID"
     # bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "MockTest" "$(SDK)"`
+    set -o pipefail
     $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Mock Test failed"
