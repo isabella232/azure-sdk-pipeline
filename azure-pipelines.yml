@@ -160,7 +160,7 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
         parameters:
           checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
-      - template: .azure-pipelines/templates/MockTest.yml
+      - template: .azure-pipelines/templates/LiveTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
       displayName: LiveTest
     - job: LiveTestFailureAlert
