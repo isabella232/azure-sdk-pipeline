@@ -55,6 +55,7 @@ stages:
     - template: .azure-pipelines/templates/BeforeTask.yml
       parameters:
         checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+        SDK: ${{ variables.SDK }}
     - template: .azure-pipelines/templates/GenerateCode.yml
     # - bash: |
     #     sdktarget=$(TARGET)
@@ -99,6 +100,7 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
         parameters:
           checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+          SDK: ${{ variables.SDK }}
       - template: .azure-pipelines/templates/Build.yml
       - template: .azure-pipelines/templates/AfterTask.yml
         parameters:
@@ -131,8 +133,12 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
         parameters:
           checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+          SDK: ${{ variables.SDK }}
       - template: .azure-pipelines/templates/MockTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
+        parameters:
+          publishArtifact: true
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       displayName: MockTest
     - job: MockTestFailureAlert
       variables:
@@ -160,8 +166,12 @@ stages:
       - template: .azure-pipelines/templates/BeforeTask.yml
         parameters:
           checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+          SDK: ${{ variables.SDK }}
       - template: .azure-pipelines/templates/LiveTest.yml
       - template: .azure-pipelines/templates/AfterTask.yml
+        parameters:
+          publishArtifact: true
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
       displayName: LiveTest
     - job: LiveTestFailureAlert
       variables:
@@ -183,6 +193,9 @@ stages:
         TASK_KEY: Submit
       steps:
       - template: .azure-pipelines/templates/BeforeTask.yml
+        parameters:
+          checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+          SDK: ${{ variables.SDK }}
       - bash: |
           echo $(Pipeline.Workspace)
           pwd

@@ -1,9 +1,15 @@
+parameters:
+- name: SDK
+  type: string
+- name: checkout
+  type: boolean
+  default: false
 steps:
 - template: VariableSetTask.yml
 - template: EnvSetup.yml
   parameters:
-    checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
-    parameters: $ {{ variables.SDK }}
+    checkout: ${{ parameters.checkout }}
+    SDK: ${{ parameters.SDK }}
 # - script: |
 #     # npm install -g publish-sdkcodgen-pipeline-result
 #     echo $pwd

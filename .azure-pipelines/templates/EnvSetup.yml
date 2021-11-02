@@ -4,7 +4,6 @@ parameters:
   default: false
 - name: SDK
   type: string
-  default: ""
 steps:
 - bash: |
     npm install
