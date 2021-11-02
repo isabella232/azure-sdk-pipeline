@@ -1,17 +1,23 @@
 steps:
 - bash: |
-    az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-    az storage blob download -c avs -f virtualservice-0.1.1.tgz -n virtualservice-0.1.1.tgz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=amecodegenstorage
-    tar -xzvf virtualservice-0.1.1.tgz
-    sudo cp package/localhost-ca.crt /usr/local/share/ca-certificates/
-    sudo update-ca-certificates
+    # az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+    # az storage blob download -c avs -f virtualservice-0.1.1.tgz -n virtualservice-0.1.1.tgz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=amecodegenstorage
+    # tar -xzvf virtualservice-0.1.1.tgz
+    # sudo cp package/localhost-ca.crt /usr/local/share/ca-certificates/
+    # sudo update-ca-certificates
 
-    cd package
-    npm install
-    . initiate.sh
-    tsc
-    sudo node dist/src/main.js 1>$(Pipeline.Workspace)/s/mockserver.log 2>&1 &
-    # sudo node dist/src/main.js &
+    # cd package
+    # npm install
+    # . initiate.sh
+    # tsc
+    # sudo node dist/src/main.js 1>$(Pipeline.Workspace)/s/mockserver.log 2>&1 &
+
+    echo "specRetrievalMethod=filesystem" >> .env
+    echo "specRetrievalLocalRelativePath=./azure-rest-api-specs" >> .env
+    echo "validationPathsPattern=specification/*/resource-manager/*/**/*.json" >> .env
+    npm install @azure-tools/mock-service-host
+    sudo node node_modules/@azure-tools/mock-service-host/dist/src/main.js
+
     sleep 3m
 
     ps -eaf |grep node
@@ -22,6 +28,11 @@ steps:
     echo "$AZURE_CLIENT_ID"
     # bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "MockTest" "$(SDK)"`
+    if [ "$?" != "0" ]; then
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Not supported SDK"
+      echo "##vso[task.setvariable variable=Task_Result]failure"
+      exit 1
+    fi
     set -o pipefail
     $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
     if [ "$?" != "0" ]; then

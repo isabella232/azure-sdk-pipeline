@@ -7,7 +7,6 @@ steps:
     sdktarget=$(TARGET)
     repo=""
     if [ "$sdktarget" == "terraform" ]; then
-      # cp $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md $(Pipeline.Workspace)/s/terraform-provider-azurerm/azurerm/internal/services/$(ResourceProvider)/
       cp $(Pipeline.Workspace)/s/$($(SPEC_REPO_NAME)/specification/$(ResourceProvider)/resource-manager/readme.terraform.md $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/
     fi
 
