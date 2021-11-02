@@ -23,7 +23,7 @@ steps:
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "MockTest" "$(SDK)"`
     $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
-      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Mock Test failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi
