@@ -3,6 +3,7 @@ steps:
 - template: EnvSetup.yml
   parameters:
     checkout: ${{ eq(variables.CHECK_OUT, 'true') }}
+    parameters: $ {{ variables.SDK }}
 # - script: |
 #     # npm install -g publish-sdkcodgen-pipeline-result
 #     echo $pwd

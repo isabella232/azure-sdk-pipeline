@@ -2,6 +2,9 @@ parameters:
 - name: checkout
   type: boolean
   default: false
+- name: SDK
+  type: string
+  default: ""
 steps:
 - bash: |
     npm install
@@ -25,20 +28,20 @@ steps:
     - bash: |
         git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
       displayName: 'pull repo'
-- ${{ if eq(variables.SDK, 'go') }}:
+- ${{ if eq(parameters.SDK, 'go') }}:
   - task: GoTool@0
     inputs:
       version: '1.16.x'
       goPath: '/home/vsts/work/1/s/go'
       goBin: '/home/vsts/work/1/s/go/bin'
-- ${{ if eq(variables.SDK, 'go') }}:
+- ${{ if eq(parameters.SDK, 'go') }}:
   - bash: |
       export GOPATH=/home/vsts/work/1/s/go
       export GOROOT=/home/vsts/work/1/s/go/bin
       # go get golang.org/x/tools/cmd/goimports
       sudo apt install golang-golang-x-tools -y
     displayName: 'setup Go environment'
-- ${{ if eq(variables.SDK, 'dotnet') }}:
+- ${{ if eq(parameters.SDK, 'dotnet') }}:
   - task: UseDotNet@2
     inputs:
       packageType: "runtime"
