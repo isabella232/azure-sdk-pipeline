@@ -19,6 +19,7 @@ steps:
   displayName: 'Run Mock Server'
 - bash: |
     set -x
+    echo "$AZURE_CLIENT_ID"
     # bash ./scripts/bash/$(SDK)/RunMockTest.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "MockTest" "$(SDK)"`
     $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
@@ -28,3 +29,10 @@ steps:
       exit 1
     fi
   displayName: 'Mock Test'
+  env: 
+    {
+      "AZURE_CLIENT_ID": "$(SERVICE_PRINCIPE_ID)",
+      "AZURE_CLIENT_SECRET": "$(SERVICE_PRINCIPE_SECRET)",
+      "SUBSCRIPTION_ID": "$(SERVICE_PRINCIPE_SUBSCRIPTION)",
+      "AZURE_TENANT_ID": "$(SERVICE_PRINCIPE_TENANT)"
+    }
