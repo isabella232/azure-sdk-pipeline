@@ -34,7 +34,7 @@ steps:
       exit 1
     fi
     set -o pipefail
-        $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
+    $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Mock Test failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
