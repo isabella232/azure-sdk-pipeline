@@ -8,25 +8,27 @@ steps:
   displayName: 'install autorest'
 - bash: |
     set -x
-    captizeRP=$(ResourceProvider)
-    captizeRP=`echo ${captizeRP:0:1} | tr  '[a-z]' '[A-Z]'`${captizeRP:1}
+    shortenRP=$(ResourceProvider)
+    shortenRP=${shortenRP:10}
+    captizeRP=${shortenRP}
+    captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
     serviceType=$(SERVICE_TYPE)
     if [ "$serviceType" == "resource-manager" ]; then
       echo 'resource-manager'
-      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.*
+      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
       if [ -d $projectFolder ]; then
         echo "the project folder exists."
       else
         echo 'generate template'
         cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)
         dotnet new -i $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/eng/templates/Azure.ResourceManager.Template
-        mkdir -p $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP
-        cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP
-        dotnet new azuremgmt --provider $captizeRP --includeCI true --force
+        mkdir -p $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
+        cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
+        dotnet new azuremgmt --provider $(ResourceProvider) --includeCI true --force
 
         # update the readme url
-        sed -i -e "s|require.*md|require: $(README_FILE_GITHUB_URL_WITH_COMMIT)|g" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP/src/autorest.md
-        cat $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.$captizeRP/src/autorest.md
+        sed -i -e "s|require.*md|require: $(README_FILE_GITHUB_URL_WITH_COMMIT)|g" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src/autorest.md
+        cat $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src/autorest.md
         echo "end of autorest.md"
       fi
     elif [ "$serviceType" == "data-plan" ]; then
@@ -34,9 +36,11 @@ steps:
     fi
   displayName: 'Generate autorest.md'
 - bash: |
-    captizeRP=$(ResourceProvider)
-    captizeRP=`echo ${captizeRP:0:1} | tr  '[a-z]' '[A-Z]'`${captizeRP:1}
-    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$(ResourceProvider)/Azure.ResourceManager.*/src
+    shortenRP=$(ResourceProvider)
+    shortenRP=${shortenRP:10}
+    captizeRP=${shortenRP}
+    captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
+    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src
     dotnet build /t:GenerateCode >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
