@@ -8,7 +8,7 @@ steps:
 - bash: |
     shortenRP=$(ResourceProvider)
     shortenRP=${shortenRP:10}
-    captizeRP=$(shortenRP)
+    captizeRP=${shortenRP}
     captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
     cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src
     dotnet build 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
