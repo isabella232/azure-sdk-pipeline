@@ -1,0 +1,25 @@
+{
+  "serviceType": "resource-manager",
+  "resources": [],
+  "resourcelist": "",
+  "onboardType": "ad-hoc",
+  "swaggerRepo": {
+    "type": "github",
+    "path": "https://github.com/Yao725/azure-rest-api-specs",
+    "branch": "main"
+  },
+  "sdkRepo": {
+    "type": "github",
+    "path": "https://github.com/Yao725/azure-sdk-for-net",
+    "branch": "main"
+  },
+  "codegenRepo": {
+    "type": "github",
+    "path": "https://github.com/Azure/azure-sdk-pipeline",
+    "branch": "dev"
+  },
+  "jsonFileList": [],
+  "RPName": "dns",
+  "readmeFile": "/specification/dns/resource-manager/readme.md",
+  "target": "dotnet"
+}
