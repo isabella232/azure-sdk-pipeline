@@ -8,27 +8,39 @@ steps:
   displayName: 'install autorest'
 - bash: |
     set -x
-    shortenRP=$(ResourceProvider)
-    shortenRP=${shortenRP:10}
-    captizeRP=${shortenRP}
-    captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
+    declare -A resourceProviderMap
+    resourceProviderMap["vmware"]="avs"
+    resourceProviderMap["azure-kusto"]="kusto"
+    resourceProviderMap["cosmos-db"]="cosmosdb"
+    resourceProviderMap["customer-insights"]="customerinsights"
+    resourceProviderMap["monitor"]="insights"
+    resourceProviderMap["msi"]="managedserviceidentity"
+    resourceProviderMap["web"]="appservice"
+    if [ -v resourceProviderMap[$(ResourceProvider)] ]; then
+      captizeRP=${resourceProviderMap[$(ResourceProvider)]}
+    else
+      captizeRP=$(ResourceProvider)
+    fi
+    modifyRP=${captizeRP}
+    modifyRP=`echo ${modifyRP:0:1} | tr  '[a-z]' '[A-Z]'`${modifyRP:1}
+    provider="Microsoft."${modifyRP}
     serviceType=$(SERVICE_TYPE)
     if [ "$serviceType" == "resource-manager" ]; then
       echo 'resource-manager'
-      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
+      projectFolder=$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.*
       if [ -d $projectFolder ]; then
         echo "the project folder exists."
       else
         echo 'generate template'
         cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)
         dotnet new -i $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/eng/templates/Azure.ResourceManager.Template
-        mkdir -p $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
-        cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP
-        dotnet new azuremgmt --provider $(ResourceProvider) --includeCI true --force
+        mkdir -p $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$modifyRP
+        cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$modifyRP
+        dotnet new azuremgmt --provider $provider --includeCI true --force
 
         # update the readme url
-        sed -i -e "s|require.*md|require: $(README_FILE_GITHUB_URL_WITH_COMMIT)|g" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src/autorest.md
-        cat $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src/autorest.md
+        sed -i -e "s|require.*md|require: $(README_FILE_GITHUB_URL_WITH_COMMIT)|g" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$modifyRP/src/autorest.md
+        cat $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$modifyRP/src/autorest.md
         echo "end of autorest.md"
       fi
     elif [ "$serviceType" == "data-plan" ]; then
@@ -36,11 +48,20 @@ steps:
     fi
   displayName: 'Generate autorest.md'
 - bash: |
-    shortenRP=$(ResourceProvider)
-    shortenRP=${shortenRP:10}
-    captizeRP=${shortenRP}
-    captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
-    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src
+    declare -A resourceProviderMap
+    resourceProviderMap["vmware"]="avs"
+    resourceProviderMap["azure-kusto"]="kusto"
+    resourceProviderMap["cosmos-db"]="cosmosdb"
+    resourceProviderMap["customer-insights"]="customerinsights"
+    resourceProviderMap["monitor"]="insights"
+    resourceProviderMap["msi"]="managedserviceidentity"
+    resourceProviderMap["web"]="appservice"
+    if [ -v resourceProviderMap[$(ResourceProvider)] ]; then
+      captizeRP=${resourceProviderMap[$(ResourceProvider)]}
+    else
+      captizeRP=$(ResourceProvider)
+    fi
+    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.*/src
     dotnet build /t:GenerateCode >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
