@@ -6,11 +6,20 @@ steps:
     git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
   displayName: 'pull repo'
 - bash: |
-    shortenRP=$(ResourceProvider)
-    shortenRP=${shortenRP:10}
-    captizeRP=${shortenRP}
-    captizeRP=`echo ${captizeRP} | tr  '[A-Z]' '[a-z]'`
-    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.$shortenRP/src
+    declare -A resourceProviderMap
+    resourceProviderMap["vmware"]="avs"
+    resourceProviderMap["azure-kusto"]="kusto"
+    resourceProviderMap["cosmos-db"]="cosmosdb"
+    resourceProviderMap["customer-insights"]="customerinsights"
+    resourceProviderMap["monitor"]="insights"
+    resourceProviderMap["msi"]="managedserviceidentity"
+    resourceProviderMap["web"]="appservice"
+    if [ -v resourceProviderMap[$(ResourceProvider)] ]; then
+      captizeRP=${resourceProviderMap[$(ResourceProvider)]}
+    else
+      captizeRP=$(ResourceProvider)
+    fi
+    cd $(Pipeline.Workspace)/s/$(SDK_REPO_NAME)/sdk/$captizeRP/Azure.ResourceManager.*/src
     dotnet build 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
