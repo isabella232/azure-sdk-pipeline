@@ -44,6 +44,9 @@
                 },
                 "apiCoverage": {
                     "pattern": "Coverage: %*"
+                },
+                "codeCoverage": {
+                    
                 }
             }
         }
