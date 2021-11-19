@@ -1,0 +1,85 @@
+import * as winston from 'winston';
+import {scriptRunningState} from "../lib/scriptRunningState";
+function getLogger() {
+
+    const sdkAutoLogLevels = {
+        levels: {
+            error: 0,
+            warn: 1,
+            section: 5, // Log as azure devops section
+            command: 6, // Running a command
+            cmdout: 7, // Command stdout
+            cmderr: 8, // Command stdout
+            info: 15,
+            endsection: 20,
+            debug: 50
+        },
+        colors: {
+            error: 'red',
+            warn: 'yellow',
+            info: 'green',
+            cmdout: 'green underline',
+            cmderr: 'yellow underline',
+            section: 'magenta bold',
+            endsection: 'magenta bold',
+            command: 'cyan bold',
+            debug: 'blue'
+        }
+    }
+
+    const logger = winston.createLogger({
+        levels: sdkAutoLogLevels.levels
+    });
+
+    type WinstonInfo = {
+        level: keyof typeof sdkAutoLogLevels.levels;
+        message: string;
+        timestamp: string;
+        show?: boolean;
+        lineResult?: scriptRunningState;
+    };
+
+
+    const formatLog = (info: WinstonInfo) => {
+        let extra = info.show ? ' C' : '';
+        if (info.lineResult) {
+            extra = {
+                failed: ' E',
+                warning: ' W'
+            }[info.lineResult] ?? '';
+        }
+
+        return `${info.timestamp} ${info.level}${extra} \t${info.message}`;
+    };
+
+    logger.add(new winston.transports.Console({
+        level: 'endsection',
+        format: winston.format.combine(
+            winston.format.colorize({ colors: sdkAutoLogLevels.colors }),
+            winston.format.timestamp({ format: 'hh:mm:ss.SSS' }),
+            winston.format.printf((info: WinstonInfo) => {
+                const { level } = info;
+                const msg = formatLog(info);
+                switch (level) {
+                    case 'error':
+                    case 'debug':
+                    case 'command':
+                        return `##[${level}] ${msg}`;
+
+                    case 'warn':
+                        return `##[warning] ${msg}`;
+                    case 'section':
+                        return `##[group] ${info.message}`;
+                    case 'endsection':
+                        return `##[endgroup] ${info.message}`;
+
+                    default:
+                        return msg;
+                }
+            })
+        )
+    }));
+    return logger;
+}
+
+export const logger: winston.Logger = getLogger();

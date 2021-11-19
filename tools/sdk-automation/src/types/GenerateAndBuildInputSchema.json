@@ -22,6 +22,11 @@
     "relatedReadmeMdFile": {
       // Related readme.md files that pending generation.
       "type": "string"
+    },
+    "serviceType": {
+      // The type of related swagger: resource-manager or data-plane
+      "type": "string",
+      "enum": ["resource-manager", "data-plane"]
     }
   },
   "required": ["specFolder", "headSha", "headRef", "repoHttpsUrl", "relatedReadmeMdFile"]
