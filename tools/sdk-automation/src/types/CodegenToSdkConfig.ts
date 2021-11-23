@@ -18,7 +18,7 @@ export type RunOptions = {
     logPrefix?: string;
     stdout?: RunLogOptions;
     stderr?: RunLogOptions;
-    exitCode?: {
+    exitWithNonZeroCode?: {
         show: boolean;
         result: 'error' | 'warning' | 'ignore';
     };
@@ -37,13 +37,11 @@ export type LiveTestOptions = {
     liveTestScript: RunOptions;
 }
 
-export type Task = {
-    name: string;
-    options: InitOptions | GenerateAndBuildOptions | MockTestOptions | LiveTestOptions;
-}
-
 export type CodegenToSdkConfig = {
-    tasks: Task[];
+    init: InitOptions;
+    generateAndBuild: GenerateAndBuildOptions;
+    mockTest: MockTestOptions;
+    liveTest: LiveTestOptions;
 };
 
 export const getCodegenToSdkConfig = getTypeTransformer<CodegenToSdkConfig>(

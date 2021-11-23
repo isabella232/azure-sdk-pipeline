@@ -28,36 +28,17 @@ const listenOnStream = (
         if (line.length === 0) {
             return;
         }
-        let lineResult = 'succeeded';
-        let _show = false;
+        let show = false;
         if (opts !== undefined) {
-            if (isLineMatch(line, opts.scriptError)) {
-                lineResult = 'failed';
-            } else if (isLineMatch(line, opts.scriptWarning)) {
-                lineResult = 'warning';
-            }
-            if (isLineMatch(line, opts.show) || lineResult !== 'succeeded') {
-                _show = true;
+            if (isLineMatch(line, opts.show) || isLineMatch(line, opts.scriptError) || isLineMatch(line, opts.scriptWarning)) {
+                show = true;
             }
         }
-        logger.log(logType, `${prefix} ${line}`, {show: _show, lineResult});
+        logger.log(logType, `${prefix} ${line}`, {show: show});
     };
 
-    let cacheLine = '';
     stream.on('data', (data) => {
-        const newData = cacheLine + data.toString();
-        const lastIdx = newData.lastIndexOf('\n');
-        if (lastIdx === -1) {
-            return;
-        }
-        const lines = newData.slice(0, lastIdx).split('\n');
-        cacheLine = newData.slice(lastIdx + 1);
-        for (const line of lines) {
-            addLine(line);
-        }
-    });
-    stream.on('end', () => {
-        addLine(cacheLine);
+        addLine(data.toString());
     });
 };
 
@@ -98,19 +79,19 @@ export async function runScript(runOptions: RunOptions, options: {
         executeResult = 'failed';
     }
     let show = false;
-    if ((cmdRet.code !== 0 || cmdRet.signal !== null) && runOptions.exitCode !== undefined) {
-        if (runOptions.exitCode.show) {
+    if ((cmdRet.code !== 0 || cmdRet.signal !== null) && runOptions.exitWithNonZeroCode !== undefined) {
+        if (runOptions.exitWithNonZeroCode.show) {
             show = true;
         }
-        if (runOptions.exitCode.result === 'error') {
+        if (runOptions.exitWithNonZeroCode.result === 'error') {
             executeResult = 'failed';
-        } else if (runOptions.exitCode.result === 'warning') {
+        } else if (runOptions.exitWithNonZeroCode.result === 'warning') {
             executeResult = 'warning';
         }
         const message = `Script return with result [${executeResult}] code [${cmdRet.code}] signal [${cmdRet.signal}] cwd [${options.cwd}]: ${scriptPath}`;
-        if (runOptions.exitCode.result === 'error') {
+        if (runOptions.exitWithNonZeroCode.result === 'error') {
             logger.error(message, {show});
-        } else if (runOptions.exitCode.result === 'warning') {
+        } else if (runOptions.exitWithNonZeroCode.result === 'warning') {
             logger.warn(message, {show});
         }
     }

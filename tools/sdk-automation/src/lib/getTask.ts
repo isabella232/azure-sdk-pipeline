@@ -1,11 +1,11 @@
-import {CodegenToSdkConfig, getCodegenToSdkConfig, Task} from "../types/CodegenToSdkConfig";
+import {CodegenToSdkConfig, GenerateAndBuildOptions, getCodegenToSdkConfig, InitOptions, LiveTestOptions, MockTestOptions} from "../types/CodegenToSdkConfig";
 import {requireJsonc} from "../utils/requireJsonc";
 
-export function getTask(codegenToSdkConfigPath: string, taskName: string): Task | undefined {
+export function getTask(codegenToSdkConfigPath: string, taskName: string): InitOptions | GenerateAndBuildOptions | MockTestOptions | LiveTestOptions | undefined {
     const codegenToSdkConfig: CodegenToSdkConfig = getCodegenToSdkConfig(requireJsonc(codegenToSdkConfigPath));
-    for (const task of codegenToSdkConfig.tasks) {
-        if (task.name === taskName) {
-            return task;
+    for (const task of Object.keys(codegenToSdkConfig)) {
+        if (task === taskName) {
+            return codegenToSdkConfig[task];
         }
     }
     return undefined;

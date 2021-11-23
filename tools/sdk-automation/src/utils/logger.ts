@@ -1,7 +1,10 @@
 import * as winston from 'winston';
-import {scriptRunningState} from "../lib/scriptRunningState";
-function getLogger() {
+import {taskResult} from "../lib/taskResult";
+import {MessageLevel} from "@azure/swagger-validation-common/src/types/message";
+import {getTaskBasicConfig, TaskBasicConfig} from "../cliSchema/taskBasicConfig";
 
+function getLogger() {
+    const config: TaskBasicConfig = getTaskBasicConfig.getProperties();
     const sdkAutoLogLevels = {
         levels: {
             error: 0,
@@ -36,21 +39,37 @@ function getLogger() {
         message: string;
         timestamp: string;
         show?: boolean;
-        lineResult?: scriptRunningState;
     };
 
-
-    const formatLog = (info: WinstonInfo) => {
-        let extra = info.show ? ' C' : '';
-        if (info.lineResult) {
-            extra = {
-                failed: ' E',
-                warning: ' W'
-            }[info.lineResult] ?? '';
-        }
-
-        return `${info.timestamp} ${info.level}${extra} \t${info.message}`;
-    };
+    logger.add(new winston.transports.File({
+        level: 'info',
+        filename: config.pipeFullLog,
+        format: winston.format.combine(
+            winston.format.printf((info: WinstonInfo) => {
+                const {level} = info;
+                let msg = info.message;
+                if (info.show) {
+                    if (!taskResult.messages) {
+                        taskResult.messages = [];
+                    }
+                    const l: MessageLevel = level.includes('error') || level.includes('cmderr')  ? 'Error' : (level.includes('warn') ? 'Warning' : 'Info');
+                    taskResult.messages.push({
+                        type: "Raw",
+                        level: l,
+                        message: msg,
+                        time: new Date()
+                    });
+                    if (l === 'Error') {
+                        taskResult.errorCount++;
+                        taskResult.result = 'failure';
+                    } else if (l === 'Warning') {
+                        taskResult.warningCount++;
+                    }
+                }
+                return msg;
+            })
+        )
+    }));
 
     logger.add(new winston.transports.Console({
         level: 'endsection',
@@ -58,27 +77,24 @@ function getLogger() {
             winston.format.colorize({ colors: sdkAutoLogLevels.colors }),
             winston.format.timestamp({ format: 'hh:mm:ss.SSS' }),
             winston.format.printf((info: WinstonInfo) => {
-                const { level } = info;
-                const msg = formatLog(info);
+                const {level} = info;
+                let msg = `${info.timestamp} ${info.level} \t${info.message}`;
                 switch (level) {
                     case 'error':
                     case 'debug':
                     case 'command':
-                        return `##[${level}] ${msg}`;
-
+                        msg = `##[${level}] ${msg}`;
                     case 'warn':
-                        return `##[warning] ${msg}`;
+                        msg = `##[warning] ${msg}`;
                     case 'section':
-                        return `##[group] ${info.message}`;
+                        msg = `##[group] ${info.message}`;
                     case 'endsection':
-                        return `##[endgroup] ${info.message}`;
-
-                    default:
-                        return msg;
+                        msg = `##[endgroup] ${info.message}`;
                 }
+                return msg;
             })
         )
-    }));
+    }))
     return logger;
 }
 

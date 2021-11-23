@@ -3,18 +3,21 @@ import {getTask} from "./lib/getTask";
 import * as path from "path";
 import {GenerateAndBuildOptions} from "./types/CodegenToSdkConfig";
 import {runScript} from "./lib/runScript";
-import {runGenerateAndBuildTaskCliConfig, RunGenerateAndBuildTaskConfig} from "./cliSchema/runGenerateAndBuildTaskCliConfig";
+import {runGenerateAndBuildTaskCliConfig, RunGenerateAndBuildTaskCliConfig} from "./cliSchema/runGenerateAndBuildTaskCliConfig";
 import {GenerateAndBuildInput} from "./types/GenerateAndBuildInput";
 import * as fs from "fs";
 import {processGenerateAndBuildOutput} from "./lib/processGenerateAndBuildOutput";
+import {saveTaskResult, setTaskResult} from "./lib/taskResult";
+
+const config: RunGenerateAndBuildTaskCliConfig = runGenerateAndBuildTaskCliConfig.getProperties();
 
 async function main() {
-    const config: RunGenerateAndBuildTaskConfig = runGenerateAndBuildTaskCliConfig.getProperties();
+    setTaskResult(config, 'GenerateAndBuild');
     const generateAndBuildTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'generateAndBuild');
     if (!generateAndBuildTask) {
         throw `Generate and build task is ${generateAndBuildTask}`;
     }
-    const generateAndBuildOptions = generateAndBuildTask.options as GenerateAndBuildOptions;
+    const generateAndBuildOptions = generateAndBuildTask as GenerateAndBuildOptions;
     const runOptions = generateAndBuildOptions.generateAndBuildScript;
     const inputJson: GenerateAndBuildInput = {
         specFolder: config.specFolder,
@@ -32,13 +35,18 @@ async function main() {
     if (executeResult === 'failed') {
         throw `Execute generateAndBuild script failed.`
     }
-    console.log('##vso[task.setVariable variable=StepResult]success');
-    await processGenerateAndBuildOutput(config);
+    const result = await processGenerateAndBuildOutput(config);
+    if (result.hasFailedResult) {
+        console.log('##vso[task.setVariable variable=StepResult]failure');
+    } else {
+        console.log('##vso[task.setVariable variable=StepResult]success');
+    }
 }
 
 main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
     console.log('##vso[task.setVariable variable=StepResult]failure');
-    process.exit(1);
+}).finally(() => {
+    saveTaskResult();
 })

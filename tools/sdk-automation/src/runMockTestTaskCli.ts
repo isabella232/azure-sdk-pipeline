@@ -1,39 +1,49 @@
 import {logger} from "./utils/logger";
-import {runInitTaskCliConfig, RunInitTaskConfig} from "./cliSchema/runInitTaskCliConfig";
 import {getTask} from "./lib/getTask";
 import * as path from "path";
-import {InitOptions} from "./types/CodegenToSdkConfig";
+import {MockTestOptions} from "./types/CodegenToSdkConfig";
 import {runScript} from "./lib/runScript";
-import {getInitOutput} from "./types/GetInitOutput";
-import {requireJsonc} from "./utils/requireJsonc";
 import * as fs from "fs";
+import {runMockTestTaskCliConfig, RunMockTestTaskCliConfig} from "./cliSchema/runMockTestTaskCliConfig";
+import {MockTestInput} from "./types/MockTestInput";
+import {processMockTestOutput} from "./lib/processMockTestOutput";
+import {saveTaskResult, setTaskResult} from "./lib/taskResult";
+
+const config: RunMockTestTaskCliConfig = runMockTestTaskCliConfig.getProperties();
 
 async function main() {
-    const config: RunInitTaskConfig = runInitTaskCliConfig.getProperties();
-    const initTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'init');
-    if (!initTask) {
-        throw `Init task is ${initTask}`;
+    setTaskResult(config, 'MockTest');
+    const mockTestTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'mockTest');
+    if (!mockTestTask) {
+        throw `Init task is ${mockTestTask}`;
     }
-    const initOptions = initTask.options as InitOptions;
-    const runOptions = initOptions.initScript;
+    const mockTestOptions = mockTestTask as MockTestOptions;
+    const runOptions = mockTestOptions.mockTestScript;
+    const inputJson: MockTestInput = {
+        packageFolder: config.packageFolder,
+        mockServerHost: config.mockServerHost
+    };
+    fs.writeFileSync(config.mockTestInputJson, JSON.stringify(inputJson, undefined, 2), {encoding: 'utf-8'});
     const executeResult = await runScript(runOptions, {
         cwd: path.resolve(config.sdkRepo),
-        args: ['/tmp/initOutput.json']
+        args: [config.mockTestInputJson, config.mockTestOutputJson]
     });
     if (executeResult === 'failed') {
         throw `Execute init script failed.`
     }
-    if (fs.existsSync('/tmp/initOutput.json')) {
-        const initOutputJson = getInitOutput(requireJsonc('/tmp/initOutput.json'));
-        for (const v of Object.keys(initOutputJson.envs)) {
-            console.log(`##vso[task.setVariable variable=${v};isOutput=true]${initOutputJson.envs[v]}`);
-        }
+    const result = await processMockTestOutput(config);
+    if (result) {
+        console.log('##vso[task.setVariable variable=StepResult]success');
+    } else {
+        console.log('##vso[task.setVariable variable=StepResult]failure');
     }
+
 }
 
 main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
     console.log('##vso[task.setVariable variable=StepResult]failure');
-    process.exit(1);
+}).finally(() => {
+    saveTaskResult();
 })

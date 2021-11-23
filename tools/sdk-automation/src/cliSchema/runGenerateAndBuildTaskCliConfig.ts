@@ -1,6 +1,7 @@
 import * as convict from 'convict';
+import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 
-export type RunGenerateAndBuildTaskConfig = {
+export class RunGenerateAndBuildTaskCliConfig extends TaskBasicConfig {
     sdkRepo: string;
     specFolder: string;
     headSha: string;
@@ -17,7 +18,7 @@ export type RunGenerateAndBuildTaskConfig = {
     sdkGenerationName: string;
 }
 
-export const runGenerateAndBuildTaskCliConfig = convict<RunGenerateAndBuildTaskConfig>({
+export const runGenerateAndBuildTaskCliConfig = convict<RunGenerateAndBuildTaskCliConfig>({
     sdkRepo: {
         default: '',
         env: 'SDK_REPO',
@@ -74,7 +75,7 @@ export const runGenerateAndBuildTaskCliConfig = convict<RunGenerateAndBuildTaskC
         format: String
     },
     azureStorageBlobSasUrl: {
-        default: 'https://sdkpipelinetest.blob.core.windows.net/?sv=2020-08-04&ss=b&srt=c&sp=rwdlacitfx&se=2021-11-26T17:19:30Z&st=2021-11-18T09:19:30Z&spr=https&sig=q5NaieQWFRV8gkrtVUSdBvACYUaoq5HwjVcCeD0dEpM%3D',
+        default: '',
         env: 'AZURE_STORAGE_BLOB_SAS_URL',
         format: String
     },
@@ -87,5 +88,6 @@ export const runGenerateAndBuildTaskCliConfig = convict<RunGenerateAndBuildTaskC
         default: '',
         env: 'SDK_GENERATION_NAME',
         format: String
-    }
+    },
+    ...taskBasicConfig
 });

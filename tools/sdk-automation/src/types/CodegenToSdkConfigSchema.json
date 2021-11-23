@@ -1,38 +1,20 @@
 {
   "type": "object",
   "properties": {
-    "tasks": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Task"
-      }
+    "init": {
+      "$ref": "#/definitions/InitOptions"
+    },
+    "generateAndBuild": {
+      "$ref": "#/definitions/GenerateAndBuildOptions"
+    },
+    "mockTest": {
+      "$ref": "#/definitions/MockTestOptions"
+    },
+    "liveTest": {
+      "$ref": "#/definitions/LiveTestOptions"
     }
   },
   "definitions": {
-    "Task": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "enum": [
-            "init",
-            "generateAndBuild",
-            "mockTest",
-            "liveTest"
-          ]
-        },
-        "options": {
-          "type": "object",
-          "oneOf": [
-            {"$ref": "#/definitions/InitOptions"},
-            {"$ref": "#/definitions/GenerateAndBuildOptions"},
-            {"$ref": "#/definitions/MockTestOptions"},
-            {"$ref": "#/definitions/LiveTestOptions"}
-          ]
-        }
-      },
-      "required": ["name", "options"]
-    },
     "InitOptions": {
       // Init the environment. Install dependencies.
       "type": "object",
@@ -91,6 +73,7 @@
           "type": "string"
         },
         "envs": {
+          // Not Implemented
           // Extra environment variable to be passed to the script (except initScript).
           // By default the following envs will be passed:
           // PATH, SHELL, PWD (current directory)
@@ -110,10 +93,7 @@
             {
               "$ref": "#/definitions/RunLogOptions"
             }
-          ],
-          "default": {
-            "show": true
-          }
+          ]
         },
         "stderr": {
           // How should SDK Automation handle the script stderr stream
@@ -123,7 +103,7 @@
             }
           ],
           "default": {
-            "scriptError": "error"
+            "scriptError": "[error|Error]"
           }
         },
         "exitWithNonZeroCode": {

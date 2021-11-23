@@ -1,6 +1,7 @@
 import * as convict from 'convict';
+import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 
-export type GetStepsToRunCliConfig = {
+export class GetStepsToRunCliConfig extends TaskBasicConfig {
     sdkRepo: string;
     skippedSteps: string
 }
@@ -15,5 +16,6 @@ export const getStepsToRunCliConfig = convict<GetStepsToRunCliConfig>({
        default: '',
        env: 'SKIPPED_STEPS',
        format: String
-   }
+   },
+    ...taskBasicConfig
 });

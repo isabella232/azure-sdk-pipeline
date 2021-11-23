@@ -4,7 +4,10 @@
     "packageFolder": {
       // The path of package folder
       "type": "string"
+    },
+    "mockServerHost": {
+      "type": "string"
     }
   },
-  "required": ["packageFolder"]
+  "required": ["packageFolder", "mockServerHost"]
 }

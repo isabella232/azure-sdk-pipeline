@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@azure/storage-blob": "^12.8.0",
+    "@azure/swagger-validation-common": "^0.1.2",
     "@ts-common/azure-js-dev-tools": "^22.5.1",
     "ajv": "^6.12.6",
     "colors": "^1.4.0",

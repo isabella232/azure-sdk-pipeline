@@ -18,5 +18,5 @@
       "type": "number"
     }
   },
-  "required": ["total", "success", "fail", "apiCoverage"]
+  "required": ["total", "success", "fail", "apiCoverage", "codeCoverage"]
 }
