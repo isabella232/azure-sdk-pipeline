@@ -65,7 +65,7 @@ stages:
             parameters:
               sdk: ${{ parameters.sdk }}
               specRepoUrl: ${{ parameters.specRepoUrl }}
-              specRepoBaseBranch: ${{ specRepoBaseBranch }}
+              specRepoBaseBranch: ${{ parameters.specRepoBaseBranch }}
               sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
               sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
 
