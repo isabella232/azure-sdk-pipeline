@@ -78,7 +78,7 @@ stages:
               triggerType: ${{ parameters.triggerType }}
               specRepoType: ${{ parameters.specRepoType }}
               specRepoUrl: ${{ parameters.specRepoUrl }}
-              specRepoBaseBranch: ${{ specRepoBaseBranch }}
+              specRepoBaseBranch: ${{ parameters.specRepoBaseBranch }}
               sdkRepoType: ${{ parameters.sdkRepoType }}
               sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
               sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
