@@ -83,4 +83,4 @@ steps:
       LANGUAGE: ${{ parameters.sdk }}
       RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
-      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}

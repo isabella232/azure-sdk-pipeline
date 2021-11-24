@@ -8,20 +8,18 @@
       }
     }
   },
-  "required": [
-    "packages"
-  ],
+  "required": ["packages"],
   "definitions": {
     "PackageResult": {
       "properties": {
+        "packageName": {
+          // Name of package. Will be used in branch name, PR title and the folder name to store the generated codes.
+          "type": "string"
+        },
         "result": {
           // Status of package. By default it's succeeded.
           "type": "string",
-          "enum": [
-            "failed",
-            "succeeded",
-            "warning"
-          ],
+          "enum": ["failed", "succeeded", "warning"],
           "default": "succeeded"
         },
         "path": {
@@ -34,7 +32,7 @@
           }
         },
         "packageFolder": {
-          // The generate package folder path.
+          // The path of package folder.
           "type": "string"
         },
         "changelog": {
@@ -47,23 +45,25 @@
             "hasBreakingChange": {
               // Does the new package has breaking change
               "type": "boolean"
+            },
+            "breakingChangeItems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
-          "required": [
-            "content"
-          ]
+          "required": ["content"]
         },
         "artifacts": {
+          // The path to artifacts
           "type": "array",
           "items": {
             "type": "string"
           }
         }
       },
-      "required": [
-        "path",
-        "packageFolder"
-      ]
+      "required": ["packageName", "path", "packageFolder"]
     }
   }
 }
