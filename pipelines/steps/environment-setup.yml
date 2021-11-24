@@ -37,15 +37,15 @@ steps:
     inputs:
       workingDir: tools/sdk-automation
       command: custom
-      customCommand: npm run build
+      customCommand: run build
 
   - task: Npm@1
     displayName: Pack Sdk Automation Tool
     inputs:
       workingDir: tools/sdk-automation
       command: custom
-      customCommand: npm pack
-      
+      customCommand: pack
+
   - bash: |
       PACKAGE_TGZ=`ls sdk-automation-*.tgz`
       npm install -g ${PACKAGE_TGZ}
