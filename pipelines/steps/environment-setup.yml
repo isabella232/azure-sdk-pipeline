@@ -26,17 +26,26 @@ steps:
     workingDirectory: ../
 
   - task: Npm@1
+    displayName: Npm Install Dependencies of Sdk Automation Tool
+    inputs:
+      workingDir: tools/sdk-automation
+      command: install
+
+
+  - task: Npm@1
     displayName: Build Sdk Automation Tool
     inputs:
       workingDir: tools/sdk-automation
-      command: npm run build
+      command: custom
+      customCommand: npm run build
 
   - task: Npm@1
     displayName: Pack Sdk Automation Tool
     inputs:
       workingDir: tools/sdk-automation
-      command: npm pack
-
+      command: custom
+      customCommand: npm pack
+      
   - bash: |
       PACKAGE_TGZ=`ls sdk-automation-*.tgz`
       npm install -g ${PACKAGE_TGZ}
