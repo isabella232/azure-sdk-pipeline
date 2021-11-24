@@ -76,8 +76,8 @@ steps:
         exit 0
       fi
       runGenerateAndBuildTask
-    displayName:: GenerateAndBuildTask
     workingDirectory: $(SDK_REPO)
+    displayName: GenerateAndBuildTask
     env:
       TASKS_TO_RUN: $(JobsToRun)
       SDK_REPO: $(SDK_REPO)
