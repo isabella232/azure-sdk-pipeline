@@ -55,26 +55,27 @@ steps:
       SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
   - bash: |
-      if [[ $SKIPPED_TASK == *"init"* ]]; then
+      if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
+      pwd
       runInitTask
     name: initTask
-    workingDirectory: $(getSdkRepo.SDK_REPO)
+    workingDirectory: $(SDK_REPO)
     env:
-      SDK_REPO: $(getSdkRepo.SDK_REPO)
-      SKIPPED_TASK: $(getStepsToRun.JobsToRun)
+      SDK_REPO: $(SDK_REPO)
+      TASKS_TO_RUN: $(JobsToRun)
   - bash: |
-      if [[ $SKIPPED_TASK == *"init"* ]]; then
+      if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
       runGenerateAndBuildTask
     name: generateAndBuild
-    workingDirectory: $(getSdkRepo.SDK_REPO)
+    workingDirectory: $(SDK_REPO)
     env:
-      SKIPPED_TASK: $(getStepsToRun.JobsToRun)
-      SDK_REPO: $(getSdkRepo.SDK_REPO)
-      SPEC_FOLDER: $(getSpecRepo.SPEC_REPO)
+      TASKS_TO_RUN: $(JobsToRun)
+      SDK_REPO: $(SDK_REPO)
+      SPEC_FOLDER: $(SPEC_REPO)
       RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
       LANGUAGE: ${{ parameters.sdk }}
       RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
