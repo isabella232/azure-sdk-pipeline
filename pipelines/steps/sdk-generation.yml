@@ -63,8 +63,8 @@ steps:
       fi
       pwd
       ls -la
-      ls -l .script/
-      sudo chmod -R a+rwx .script/sdk_init.sh
+      ls -l .scripts/
+      chmod -R a+rwx .script/sdk_init.sh
       runInitTask
     displayName: InitTask
     workingDirectory: $(SDK_REPO)
