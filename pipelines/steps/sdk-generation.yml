@@ -62,7 +62,8 @@ steps:
         exit 0
       fi
       pwd
-      ls -l
+      ls -la
+      ls -l .script/
       sudo chmod -R a+rwx .script/sdk_init.sh
       runInitTask
     displayName: InitTask
