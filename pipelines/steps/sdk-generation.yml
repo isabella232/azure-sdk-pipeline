@@ -54,23 +54,29 @@ steps:
     env:
       SDK_REPO: $(getSdkRepo.SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
-  - ${{ if contains(getStepsToRun.JobsToRun, 'init') }}:
-    - bash: |
-        runInitTask
-      name: initTask
-      workingDirectory: $(getSdkRepo.SDK_REPO)
-      env:
-        SDK_REPO: $(getSdkRepo.SDK_REPO)
-  - ${{ if contains(getStepsToRun.JobsToRun, 'init') }}:
-    - bash: |
-        runGenerateAndBuildTask
-      name: generateAndBuild
-      workingDirectory: $(getSdkRepo.SDK_REPO)
-      env:
-        SDK_REPO: $(getSdkRepo.SDK_REPO)
-        SPEC_FOLDER: $(getSpecRepo.SPEC_REPO)
-        RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
-        LANGUAGE: ${{ parameters.sdk }}
-        RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
-        AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
-        sdkGenerationName: ${{ parameters.sdkGenerationName }}
+  - bash: |
+      if [[ $SKIPPED_TASK == *"init"* ]]; then
+        exit 0
+      fi
+      runInitTask
+    name: initTask
+    workingDirectory: $(getSdkRepo.SDK_REPO)
+    env:
+      SDK_REPO: $(getSdkRepo.SDK_REPO)
+      SKIPPED_TASK: $(getStepsToRun.JobsToRun)
+  - bash: |
+      if [[ $SKIPPED_TASK == *"init"* ]]; then
+        exit 0
+      fi
+      runGenerateAndBuildTask
+    name: generateAndBuild
+    workingDirectory: $(getSdkRepo.SDK_REPO)
+    env:
+      SKIPPED_TASK: $(getStepsToRun.JobsToRun)
+      SDK_REPO: $(getSdkRepo.SDK_REPO)
+      SPEC_FOLDER: $(getSpecRepo.SPEC_REPO)
+      RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
+      LANGUAGE: ${{ parameters.sdk }}
+      RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
+      AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
