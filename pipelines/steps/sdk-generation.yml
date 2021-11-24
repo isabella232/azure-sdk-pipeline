@@ -59,6 +59,7 @@ steps:
         exit 0
       fi
       pwd
+      sudo chmod -R a+rwx .script/sdk_init.sh
       runInitTask
     name: initTask
     workingDirectory: $(SDK_REPO)
