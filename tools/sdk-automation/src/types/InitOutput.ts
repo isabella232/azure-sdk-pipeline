@@ -8,7 +8,7 @@ export type InitOutput = {
     envs: StringMap<string | boolean | number>;
 };
 
-export const getInitOutput = getTypeTransformer<InitOutput>(
+export const initOutput = getTypeTransformer<InitOutput>(
     initOutputSchema,
     'InitOutput'
 );

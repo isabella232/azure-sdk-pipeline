@@ -1,0 +1,76 @@
+parameters:
+  - name: sdkGenerationName
+    type: string
+
+  - name: sdk
+    type: string
+
+  - name: resourceProvider
+    type: string
+
+  - name: readmeFile
+    type: string
+
+  - name: triggerType
+    type: string
+
+  - name: specRepoType
+    type: string
+
+  - name: specRepoUrl
+    type: string
+
+  - name: specRepoBaseBranch
+    type: string
+
+  - name: sdkRepoType
+    type: string
+
+  - name: sdkRepoUrl
+    type: string
+
+  - name: sdkRepoBaseBranch
+    type: string
+
+  - name: skippedTask
+    type: string
+
+steps:
+  - bash: |
+      getRepoName SDK_REPO ${{ parameters.sdkRepoUrl }}
+    displayName: Get SDK Repo Folder
+    name: getSdkRepo
+    workingDirectory: ../
+  - bash: |
+      getRepoName SPEC_REPO ${{ parameters.specRepoUrl }}
+    displayName: Get Spec Repo Folder
+    name: getSpecRepo
+    workingDirectory: ../
+  - bash: |
+      getStepsToRun
+    displayName: Get Steps To Run
+    name: getStepsToRun
+    workingDirectory: $(getSdkRepo.SDK_REPO)
+    env:
+      SDK_REPO: $(getSdkRepo.SDK_REPO)
+      SKIPPED_STEPS: ${{ parameters.skippedTask }}
+  - ${{ if contains(getStepsToRun.JobsToRun, 'init') }}:
+    - bash: |
+        runInitTask
+      name: initTask
+      workingDirectory: $(getSdkRepo.SDK_REPO)
+      env:
+        SDK_REPO: $(getSdkRepo.SDK_REPO)
+  - ${{ if contains(getStepsToRun.JobsToRun, 'init') }}:
+    - bash: |
+        runGenerateAndBuildTask
+      name: generateAndBuild
+      workingDirectory: $(getSdkRepo.SDK_REPO)
+      env:
+        SDK_REPO: $(getSdkRepo.SDK_REPO)
+        SPEC_FOLDER: $(getSpecRepo.SPEC_REPO)
+        RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
+        LANGUAGE: ${{ parameters.sdk }}
+        RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
+        AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
+        sdkGenerationName: ${{ parameters.sdkGenerationName }}

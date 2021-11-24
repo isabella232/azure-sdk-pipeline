@@ -9,7 +9,7 @@ const MemoryFileSystem = require('memory-fs');
 const copyConfigureFileFromSDKRepo2 = (repo: string): string => {
     const repository = getRepository(repo);
     logger.logInfo(`Get codegen_to_sdk_config file from repo ${repo}`);
-    
+
     let config = "";
     return config;
 }
@@ -32,7 +32,7 @@ const copyConfigureFileFromSDKRepo = async (client: Octokit,
         fs.writeFileSync(CODEGEN_TO_SDK_CONFIG_FILE, content);
         return content;
     }
-    
+
     return "";
 }
 
@@ -174,7 +174,6 @@ export class CodegenToSDKConfig {
 const setupPipeline = async (org:string, repo:string, branch: string) => {
     console.log("envs:" + Object.keys(process.env));
 
-    console.log("token:" + process.env.GITHUT_TOKEN);
     const client: Octokit = new Octokit({
         auth: process.env.GITHUT_TOKEN,
     });

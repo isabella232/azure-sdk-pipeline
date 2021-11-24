@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {logger} from "./utils/logger";
 import {runInitTaskCliConfig, RunInitTaskCliConfig} from "./cliSchema/runInitTaskCliConfig";
 import {getTask} from "./lib/getTask";
@@ -6,7 +8,7 @@ import {InitOptions} from "./types/CodegenToSdkConfig";
 import {runScript} from "./lib/runScript";
 import {requireJsonc} from "./utils/requireJsonc";
 import * as fs from "fs";
-import {getInitOutput} from "./types/GetInitOutput";
+import {initOutput} from "./types/InitOutput";
 import {saveTaskResult, setTaskResult} from "./lib/taskResult";
 
 const config: RunInitTaskCliConfig = runInitTaskCliConfig.getProperties();
@@ -28,7 +30,7 @@ async function main() {
         throw `Execute init script failed.`
     }
     if (fs.existsSync(config.initOutput)) {
-        const initOutputJson = getInitOutput(requireJsonc(config.initOutput));
+        const initOutputJson = initOutput(requireJsonc(config.initOutput));
         for (const v of Object.keys(initOutputJson.envs)) {
             console.log(`##vso[task.setVariable variable=${v};isOutput=true]${initOutputJson.envs[v]}`);
         }

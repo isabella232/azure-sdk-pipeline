@@ -1,0 +1,85 @@
+trigger: none
+
+parameters:
+  - name: sdkGenerationName
+    type: string
+
+  - name: sdk
+    type: string
+    values:
+      - js
+      - java
+      - go
+      - net
+      - python
+
+  - name: resourceProvider
+    type: string
+
+  - name: readmeFile
+    type: string
+
+  - name: triggerType
+    type: string
+    default: ad-hoc
+    values:
+      - ad-hoc
+      - ci
+      - release
+
+  - name: specRepoType
+    type: string
+    default: github
+    values:
+      - github
+      - devops
+
+  - name: specRepoUrl
+    type: string 
+
+  - name: specRepoBaseBranch
+    type: string
+
+  - name: sdkRepoType
+    type: string
+    default: github
+    values:
+      - github
+      - devops
+
+  - name: sdkRepoUrl
+    type: string
+
+  - name: sdkRepoBaseBranch
+    type: string
+
+  - name: skippedTask
+    type: string
+
+stages:
+  - stage: SdkGeneration
+    jobs:
+      - job: SdkGeneration
+        steps:
+          - template: ./pipelines/steps/environment-setup.yml
+            parameters:
+              sdk: ${{ parameters.sdk }}
+              specRepoUrl: ${{ parameters.specRepoUrl }}
+              specRepoBaseBranch: ${{ specRepoBaseBranch }}
+              sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
+              sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
+
+          - template: ./pipelines/steps/sdk-generation.yml
+            parameters:
+              sdkGenerationName: ${{ parameters.sdkGenerationName }}
+              sdk: ${{ parameters.sdk }}
+              resourceProvider: ${{ parameters.resourceProvider }}
+              readmeFile: ${{ parameters.readmeFile }}
+              triggerType: ${{ parameters.triggerType }}
+              specRepoType: ${{ parameters.specRepoType }}
+              specRepoUrl: ${{ parameters.specRepoUrl }}
+              specRepoBaseBranch: ${{ specRepoBaseBranch }}
+              sdkRepoType: ${{ parameters.sdkRepoType }}
+              sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
+              sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
+              skippedTask: ${{ parameters.skippedTask }}

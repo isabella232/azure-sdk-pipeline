@@ -10,7 +10,8 @@
     "sourceMap" :true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "declaration": true
   },
   "exclude": [
     "node_modules",

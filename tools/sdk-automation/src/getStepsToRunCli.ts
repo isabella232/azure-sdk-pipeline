@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {logger} from "./utils/logger";
 import {GetStepsToRunCliConfig, getStepsToRunCliConfig} from "./cliSchema/getStepsToRunCliConfig";
 import * as fs from "fs";

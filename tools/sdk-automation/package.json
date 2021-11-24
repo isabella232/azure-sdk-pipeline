@@ -2,14 +2,33 @@
   "name": "sdk-automation",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc && npm run copy",
+    "build": "rimraf dist && tsc && npm run copy",
     "copy": "copyfiles  -u 1 src/types/*.json dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Microsoft",
   "license": "MIT",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.json",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "dist/**/*.handlebars",
+    "LICENSE",
+    "README.md"
+  ],
+  "bin": {
+    "getRepoName": "dist/getRepoNameCli.js",
+    "getStepsToRun": "dist/getStepsToRunCli.js",
+    "runInitTask": "dist/runInitTaskCli.js",
+    "runGenerateAndBuildTask": "dist/runGenerateAndBuildTaskCli.js",
+    "runMockTestTask": "dist/runMockTestTaskCli.js",
+    "runLiveTestTask": "dist/runLiveTestTaskCli.js"
+  },
   "dependencies": {
     "@azure/storage-blob": "^12.8.0",
     "@azure/swagger-validation-common": "^0.1.2",
@@ -23,6 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
-    "copyfiles": "^2.4.1"
+    "copyfiles": "^2.4.1",
+    "rimraf": "^3.0.2"
   }
 }

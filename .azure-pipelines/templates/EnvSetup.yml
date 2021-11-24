@@ -47,10 +47,4 @@ steps:
     inputs:
       packageType: "runtime"
       version: "3.x"
-# - bash: |
-#     export AZURE_CLIENT_ID=$(SERVICE_PRINCIPE_ID)
-#     export AZURE_CLIENT_SECRET=$(SERVICE_PRINCIPE_SECRET)
-#     export SUBSCRIPTION_ID=$(SERVICE_PRINCIPE_SUBSCRIPTION)
-#     export AZURE_TENANT_ID=$(SERVICE_PRINCIPE_TENANT)
 
-#   displayName: 'setup env'

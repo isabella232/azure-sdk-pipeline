@@ -1,0 +1,46 @@
+parameters:
+  - name: sdk
+    type: string
+
+  - name: specRepoUrl
+    type: string
+
+  - name: specRepoBaseBranch
+    type: string
+
+  - name: sdkRepoUrl
+    type: string
+
+  - name: sdkRepoBaseBranch
+    type: string
+
+steps:
+  - bash: |
+        git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
+    displayName: Clone Spec Repo
+    workingDirectory: ../
+
+  - bash: |
+        git clone --branch ${{ parameters.sdkRepoBaseBranch }} ${{ parameters.sdkRepoUrl }}
+    displayName: Clone Sdk Repo 
+    workingDirectory: ../
+
+  - task: Npm@1
+    displayName: Build Sdk Automation Tool
+    inputs:
+      workingDir: tools/sdk-automation
+      command: npm run build
+
+  - task: Npm@1
+    displayName: Pack Sdk Automation Tool
+    inputs:
+      workingDir: tools/sdk-automation
+      command: npm pack
+
+  - bash: |
+      PACKAGE_TGZ=`ls sdk-automation-*.tgz`
+      npm install -g ${PACKAGE_TGZ}
+    displayName: Install Sdk Automation Tool
+    inputs:
+      workingDirectory: tools/sdk-automation
+ 

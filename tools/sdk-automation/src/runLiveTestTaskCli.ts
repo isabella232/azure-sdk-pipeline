@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import {logger} from "./utils/logger";
 import {getTask} from "./lib/getTask";
 import * as path from "path";
