@@ -41,6 +41,5 @@ steps:
       PACKAGE_TGZ=`ls sdk-automation-*.tgz`
       npm install -g ${PACKAGE_TGZ}
     displayName: Install Sdk Automation Tool
-    inputs:
-      workingDirectory: tools/sdk-automation
+    workingDirectory: tools/sdk-automation
  
