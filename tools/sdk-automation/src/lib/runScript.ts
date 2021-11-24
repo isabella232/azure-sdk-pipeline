@@ -57,7 +57,7 @@ export async function runScript(runOptions: RunOptions, options: {
         code: null,
         signal: null
     };
-    fs.chmodSync(scriptPath, 777);
+    fs.chmodSync(scriptPath, '777');
     try {
         const child = spawn(scriptPath, options.args, {
             cwd: options.cwd,
