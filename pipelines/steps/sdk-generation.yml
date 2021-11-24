@@ -64,7 +64,7 @@ steps:
       pwd
       ls -la
       ls -l .scripts/
-      chmod -R a+rwx .script/sdk_init.sh
+      chmod -R a+rwx .scripts/sdk_init.sh
       runInitTask
     displayName: InitTask
     workingDirectory: $(SDK_REPO)
