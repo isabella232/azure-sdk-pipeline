@@ -41,11 +41,13 @@ steps:
     displayName: Get SDK Repo Folder
     name: getSdkRepo
     workingDirectory: ../
+
   - bash: |
       getRepoName SPEC_REPO ${{ parameters.specRepoUrl }}
     displayName: Get Spec Repo Folder
     name: getSpecRepo
     workingDirectory: ../
+
   - bash: |
       getStepsToRun
     displayName: Get Steps To Run
@@ -54,24 +56,27 @@ steps:
     env:
       SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
+
   - bash: |
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
       pwd
+      ls -l
       sudo chmod -R a+rwx .script/sdk_init.sh
       runInitTask
-    name: initTask
+    displayName: InitTask
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
       TASKS_TO_RUN: $(JobsToRun)
+
   - bash: |
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
       runGenerateAndBuildTask
-    name: generateAndBuild
+    displayName:: GenerateAndBuildTask
     workingDirectory: $(SDK_REPO)
     env:
       TASKS_TO_RUN: $(JobsToRun)
