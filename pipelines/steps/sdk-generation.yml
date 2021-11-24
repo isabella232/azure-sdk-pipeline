@@ -50,9 +50,9 @@ steps:
       getStepsToRun
     displayName: Get Steps To Run
     name: getStepsToRun
-    workingDirectory: $(getSdkRepo.SDK_REPO)
+    workingDirectory: $(SDK_REPO)
     env:
-      SDK_REPO: $(getSdkRepo.SDK_REPO)
+      SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
   - bash: |
       if [[ $SKIPPED_TASK == *"init"* ]]; then
