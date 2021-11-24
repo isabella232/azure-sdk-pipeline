@@ -61,10 +61,6 @@ steps:
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
-      pwd
-      ls -la
-      ls -l .scripts/
-      chmod -R a+rwx .scripts/sdk_init.sh
       runInitTask
     displayName: InitTask
     workingDirectory: $(SDK_REPO)

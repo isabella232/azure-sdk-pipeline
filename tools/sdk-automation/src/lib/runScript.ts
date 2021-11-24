@@ -4,6 +4,7 @@ import {spawn} from "child_process";
 import {logger} from "../utils/logger";
 import {Readable} from "stream";
 import {scriptRunningState} from "./scriptRunningState";
+import * as fs from "fs";
 
 export const isLineMatch = (line: string, filter: RunLogFilterOptions | undefined) => {
     if (filter === undefined) {
@@ -56,6 +57,7 @@ export async function runScript(runOptions: RunOptions, options: {
         code: null,
         signal: null
     };
+    fs.chmodSync(scriptPath, 777);
     try {
         const child = spawn(scriptPath, options.args, {
             cwd: options.cwd,
