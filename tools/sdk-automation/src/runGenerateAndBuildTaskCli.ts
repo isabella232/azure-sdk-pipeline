@@ -21,15 +21,19 @@ async function main() {
     }
     const generateAndBuildOptions = generateAndBuildTask as GenerateAndBuildOptions;
     const runOptions = generateAndBuildOptions.generateAndBuildScript;
-    const inputJson: GenerateAndBuildInput = {
-        specFolder: config.specFolder,
+    const specFolder = config.specFolder.includes('specification')? config.specFolder : path.join(config.specFolder, 'specification');
+    const relatedReadmeMdFile = config.relatedReadmeMdFile.includes('specification')? path.resolve('specification', config.relatedReadmeMdFile) : config.relatedReadmeMdFile;
+    const inputContent: GenerateAndBuildInput = {
+        specFolder: specFolder,
         headSha: config.headSha,
         headRef: config.headRef,
         repoHttpsUrl: config.repoHttpsUrl,
-        relatedReadmeMdFile: config.relatedReadmeMdFile,
+        relatedReadmeMdFile: relatedReadmeMdFile,
         serviceType: config.serviceType
     };
-    fs.writeFileSync(config.generateAndBuildInputJson, JSON.stringify(inputJson, undefined, 2), {encoding: 'utf-8'});
+    const inputJson = JSON.stringify(inputContent, undefined, 2)
+    logger.info(inputJson);
+    fs.writeFileSync(config.generateAndBuildInputJson, inputJson, {encoding: 'utf-8'});
     const executeResult = await runScript(runOptions, {
         cwd: path.resolve(config.sdkRepo),
         args: [config.generateAndBuildInputJson, config.generateAndBuildOutputJson]

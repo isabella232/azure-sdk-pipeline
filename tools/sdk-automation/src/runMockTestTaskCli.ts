@@ -21,11 +21,13 @@ async function main() {
     }
     const mockTestOptions = mockTestTask as MockTestOptions;
     const runOptions = mockTestOptions.mockTestScript;
-    const inputJson: MockTestInput = {
+    const inputContent: MockTestInput = {
         packageFolder: config.packageFolder,
         mockServerHost: config.mockServerHost
     };
-    fs.writeFileSync(config.mockTestInputJson, JSON.stringify(inputJson, undefined, 2), {encoding: 'utf-8'});
+    const inputJson = JSON.stringify(inputContent, undefined, 2)
+    logger.info(inputJson);
+    fs.writeFileSync(config.mockTestInputJson, inputJson, {encoding: 'utf-8'});
     const executeResult = await runScript(runOptions, {
         cwd: path.resolve(config.sdkRepo),
         args: [config.mockTestInputJson, config.mockTestOutputJson]

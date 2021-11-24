@@ -22,10 +22,12 @@ async function main() {
     }
     const liveTestOptions = liveTestTask as LiveTestOptions;
     const runOptions = liveTestOptions.liveTestScript;
-    const inputJson: LiveTestInput = {
+    const inputContent: LiveTestInput = {
         packageFolder: config.packageFolder
     };
-    fs.writeFileSync(config.liveTestInputJson, JSON.stringify(inputJson, undefined, 2), {encoding: 'utf-8'});
+    const inputJson = JSON.stringify(inputContent, undefined, 2)
+    logger.info(inputJson);
+    fs.writeFileSync(config.liveTestInputJson, inputJson, {encoding: 'utf-8'});
     const executeResult = await runScript(runOptions, {
         cwd: path.resolve(config.sdkRepo),
         args: [config.liveTestInputJson, config.liveTestOutputJson]
