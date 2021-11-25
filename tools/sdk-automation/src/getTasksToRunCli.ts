@@ -28,4 +28,5 @@ main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
     console.log('##vso[task.setVariable variable=StepResult]failure');
+    process.exit(1);
 })

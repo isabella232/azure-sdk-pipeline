@@ -2,7 +2,6 @@ import * as convict from 'convict';
 import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 
 export class RunMockTestTaskCliConfig extends TaskBasicConfig {
-    sdkRepo: string;
     packageFolder: string;
     mockTestInputJson: string;
     mockTestOutputJson: string;
@@ -10,11 +9,6 @@ export class RunMockTestTaskCliConfig extends TaskBasicConfig {
 }
 
 export const runMockTestTaskCliConfig = convict<RunMockTestTaskCliConfig>({
-    sdkRepo: {
-        default: '',
-        env: 'SDK_REPO',
-        format: String
-    },
     packageFolder: {
         default: '',
         env: 'PACKAGE_FOLDER',

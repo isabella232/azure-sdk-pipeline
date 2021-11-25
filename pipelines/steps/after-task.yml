@@ -1,5 +1,4 @@
 parameters:
-  
   - name: sdkGenerationName
     type: string
 
@@ -23,12 +22,12 @@ steps:
 
       retVal=$?
       if [ $retVal -ne 0 ]; then
-          echo "Publish Log failed"
+          echo -e "\033[0;31mPublish Log failed"
           exit 1
       fi
       
       if [[ $PRE_TASK_RESULT == "failure" ]]; then
-        echo "${TASK_NAME} is failed."
+        echo -e "\033[0;31m${TASK_NAME} task is failed."
         exit 1
       fi
     workingDirectory: $(SDK_REPO)

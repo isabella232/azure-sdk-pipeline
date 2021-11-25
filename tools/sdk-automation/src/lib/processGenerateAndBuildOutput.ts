@@ -2,7 +2,7 @@ import {RunGenerateAndBuildTaskCliConfig} from "../cliSchema/runGenerateAndBuild
 import {getGenerateAndBuildOutput} from "../types/GenerateAndBuildOutput";
 import {requireJsonc} from "../utils/requireJsonc";
 import * as fs from "fs";
-import {AzureBlobClient} from "./AzureBlobClient";
+import {AzureBlobClient} from "../utils/AzureBlobClient";
 import * as path from "path";
 
 function getFiles(dir: string, files?: string[]) {

@@ -50,7 +50,7 @@ export type TaskResult =
 export function setTaskResult(config: TaskBasicConfig, taskName: string) {
     taskResult = {
         name: taskName,
-        pipelineId: config.pipelineId,
+        pipelineId: config.buildId,
         queuedAt: new Date(config.queuedAt),
         checkRunId: 0,
         checkRunUrl: '',

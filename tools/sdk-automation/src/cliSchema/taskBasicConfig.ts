@@ -1,13 +1,25 @@
 import * as convict from 'convict';
 
 export class TaskBasicConfig {
+    sdkRepo: string;
     pipelineId: string;
     queuedAt: string;
     pipeLog: string;
     pipeFullLog: string;
+    azureStorageBlobSasUrl: string;
+    azureBlobContainerName: string;
+    sdkGenerationName: string;
+    buildId: string;
+    taskName: string;
+    mockServerLog: string;
 }
 
 export const taskBasicConfig = {
+    sdkRepo: {
+        default: '',
+        env: 'SDK_REPO',
+        format: String
+    },
     pipelineId: {
         default: '',
         env: 'PIPELINE_ID',
@@ -26,6 +38,36 @@ export const taskBasicConfig = {
     pipeFullLog: {
         default: '/tmp/sdk-generation/pipe.full.log',
         env: 'PIPE_FULL_LOG',
+        format: String
+    },
+    mockServerLog: {
+        default: '',
+        env: 'MOCK_SERVER_LOG',
+        format: String
+    },
+    sdkGenerationName: {
+        default: '',
+        env: 'SDK_GENERATION_NAME',
+        format: String
+    },
+    buildId: {
+        default: '',
+        env: 'BUILD_ID',
+        format: String
+    },
+    taskName: {
+        default: '',
+        env: 'TASK_NAME',
+        format: String
+    },
+    azureStorageBlobSasUrl: {
+        default: '',
+        env: 'AZURE_STORAGE_BLOB_SAS_URL',
+        format: String
+    },
+    azureBlobContainerName: {
+        default: 'logs',
+        env: 'AZURE_BLOB_CONTAINER_NAME',
         format: String
     }
 };
