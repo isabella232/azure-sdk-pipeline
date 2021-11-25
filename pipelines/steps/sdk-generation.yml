@@ -66,6 +66,7 @@ steps:
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
   - bash: |
+      echo ${TASKS_TO_RUN}
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
         exit 0
       fi
@@ -132,7 +133,6 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: mockTest
-
 
   - bash: |
       if [[ $TASKS_TO_RUN == *"liveTest"* ]]; then
