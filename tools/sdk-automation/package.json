@@ -23,11 +23,12 @@
   ],
   "bin": {
     "getRepoName": "dist/getRepoNameCli.js",
-    "getStepsToRun": "dist/getStepsToRunCli.js",
+    "getTasksToRun": "dist/getTasksToRunCli.js",
     "runInitTask": "dist/runInitTaskCli.js",
     "runGenerateAndBuildTask": "dist/runGenerateAndBuildTaskCli.js",
     "runMockTestTask": "dist/runMockTestTaskCli.js",
-    "runLiveTestTask": "dist/runLiveTestTaskCli.js"
+    "runLiveTestTask": "dist/runLiveTestTaskCli.js",
+    "publishLog": "dist/publishLogCli.js"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.8.0",

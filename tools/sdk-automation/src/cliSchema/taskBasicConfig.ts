@@ -19,12 +19,12 @@ export const taskBasicConfig = {
         format: String
     },
     pipeLog: {
-        default: '/tmp/pipe.log',
+        default: '/tmp/sdk-generation/pipe.log',
         env: 'PIPE_LOG',
         format: String
     },
     pipeFullLog: {
-        default: '/tmp/pipe.full.log',
+        default: '/tmp/sdk-generation/pipe.full.log',
         env: 'PIPE_FULL_LOG',
         format: String
     }

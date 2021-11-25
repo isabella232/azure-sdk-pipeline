@@ -20,7 +20,7 @@ async function main() {
         }
         jobsToRun.push(task);
     }
-    console.log(`##vso[task.setVariable variable=JobsToRun;isOutput=true]${jobsToRun.join(';')}`);
+    console.log(`##vso[task.setVariable variable=TasksToRun;isOutput=true]${jobsToRun.join(';')}`);
     console.log('##vso[task.setVariable variable=StepResult]success');
 }
 

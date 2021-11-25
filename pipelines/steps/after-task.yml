@@ -1,0 +1,40 @@
+parameters:
+  
+  - name: sdkGenerationName
+    type: string
+
+  - name: taskName
+    type: string
+    values:
+      - getTasksToRun
+      - init
+      - generateAndBuild
+      - mockTest
+      - liveTest
+
+steps:
+  - bash: |
+      if [[ -z "${TASK_NAME}" ]]; then
+        echo "Cannot Find TASK_NAME, exit"
+        exit 0
+      fi
+      
+      publishLog
+
+      retVal=$?
+      if [ $retVal -ne 0 ]; then
+          echo "Publish Log failed"
+          exit 1
+      fi
+      
+      if [[ $PRE_TASK_RESULT == "failure" ]]; then
+        echo "${TASK_NAME} is failed."
+        exit 1
+      fi
+    workingDirectory: $(SDK_REPO)
+    env:
+      TASK_NAME: ${{ parameters.taskName }}
+      AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
+      SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
+      BUILD_ID: $(Build.BuildId)
+      PRE_TASK_RESULT: $(StepResult)

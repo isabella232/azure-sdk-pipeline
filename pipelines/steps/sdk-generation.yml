@@ -49,13 +49,18 @@ steps:
     workingDirectory: ../
 
   - bash: |
-      getStepsToRun
-    displayName: Get Steps To Run
-    name: getStepsToRun
+      getTasksToRun
+    displayName: Get Tasks To Run
+    name: getTasksToRun
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
+
+  - template: pipeline/after-task.yml
+    parameters:
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      taskName: getTasksToRun
 
   - bash: |
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
@@ -66,7 +71,12 @@ steps:
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
-      TASKS_TO_RUN: $(JobsToRun)
+      TASKS_TO_RUN: $(TasksToRun)
+
+  - template: pipeline/after-task.yml
+    parameters:
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      taskName: init
 
   - bash: |
       if [[ $TASKS_TO_RUN == *"init"* ]]; then
@@ -76,7 +86,7 @@ steps:
     workingDirectory: $(SDK_REPO)
     displayName: GenerateAndBuildTask
     env:
-      TASKS_TO_RUN: $(JobsToRun)
+      TASKS_TO_RUN: $(TasksToRun)
       SDK_REPO: $(SDK_REPO)
       SPEC_FOLDER: $(SPEC_REPO)
       RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
@@ -84,3 +94,8 @@ steps:
       RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
+
+  - template: pipeline/after-task.yml
+    parameters:
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      taskName: generateAndBuild
