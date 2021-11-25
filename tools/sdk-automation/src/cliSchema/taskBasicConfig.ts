@@ -66,7 +66,7 @@ export const taskBasicConfig = {
         format: String
     },
     azureBlobContainerName: {
-        default: 'logs',
+        default: 'sdks',
         env: 'AZURE_BLOB_CONTAINER_NAME',
         format: String
     }

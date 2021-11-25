@@ -8,7 +8,6 @@ import {requireJsonc} from "./utils/requireJsonc";
 
 export async function main() {
     const config: PublishLogCliConfig = publishLogCliConfig.getProperties();
-    logger.info(`=========${config.azureStorageBlobSasUrl}`);
     const azureBlobClient = new AzureBlobClient(config.azureStorageBlobSasUrl, config.azureBlobContainerName);
     const sdkGenerationServerClient = new SdkGenerationServerClient(config.sdkGenerationServiceHost)
     if (fs.existsSync(config.pipeFullLog)) {

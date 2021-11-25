@@ -16,10 +16,6 @@ parameters:
 
 steps:
   - bash: |
-      curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
-    displayName: Notify Sdk Generation Server to Start
-
-  - bash: |
         git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
     displayName: Clone Spec Repo
     workingDirectory: ../
