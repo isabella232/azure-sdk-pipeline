@@ -67,7 +67,7 @@ steps:
 
   - bash: |
       echo ${TASKS_TO_RUN}
-      if [[ $TASKS_TO_RUN == *"init"* ]]; then
+      if [[ $TASKS_TO_RUN != *"init"* ]]; then
         exit 0
       fi
       runInitTask
@@ -83,7 +83,7 @@ steps:
       taskName: init
 
   - bash: |
-      if [[ $TASKS_TO_RUN == *"generateAndBuild"* ]]; then
+      if [[ $TASKS_TO_RUN != *"generateAndBuild"* ]]; then
         exit 0
       fi
       headSha=`git rev-parse HEAD`
@@ -110,7 +110,7 @@ steps:
       taskName: generateAndBuild
 
   - bash: |
-      if [[ $TASKS_TO_RUN == *"mockTest"* ]]; then
+      if [[ $TASKS_TO_RUN != *"mockTest"* ]]; then
         exit 0
       fi
       # start mock server
@@ -135,7 +135,7 @@ steps:
       taskName: mockTest
 
   - bash: |
-      if [[ $TASKS_TO_RUN == *"liveTest"* ]]; then
+      if [[ $TASKS_TO_RUN != *"liveTest"* ]]; then
         exit 0
       fi
       IFS=';'
