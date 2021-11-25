@@ -11,7 +11,7 @@ export class SdkGenerationServerClient {
     public async publishTaskResult(sdkGenerationName: string, buildId: string, taskResult: TaskResult) {
         const request = https.request({
                 host: this.host,
-                path: `${sdkGenerationName}/taskResult`,
+                path: `codegenerations/${sdkGenerationName}/taskResult`,
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

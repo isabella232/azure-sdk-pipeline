@@ -22,12 +22,14 @@ steps:
 
       retVal=$?
       if [ $retVal -ne 0 ]; then
-          echo -e "\033[0;31mPublish Log failed"
-          exit 1
+        echo -e "\033[0;31mPublish Log failed"
+        curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
+        exit 1
       fi
       
       if [[ $PRE_TASK_RESULT == "failure" ]]; then
         echo -e "\033[0;31m${TASK_NAME} task is failed."
+        curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
         exit 1
       fi
     workingDirectory: $(SDK_REPO)
@@ -37,4 +39,5 @@ steps:
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
       BUILD_ID: $(Build.BuildId)
+      SDK_GENERATION_SERVICE_HOST: $(CodegenApp_Server)
       PRE_TASK_RESULT: $(StepResult)
