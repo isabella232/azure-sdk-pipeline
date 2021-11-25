@@ -21,7 +21,7 @@ async function main() {
         jobsToRun.push(task);
     }
     logger.info(`============${jobsToRun.join(';')}`);
-    console.log(`##vso[task.setVariable variable=TasksToRun;isOutput=true]${jobsToRun.join(';')}`);
+    console.log(`##vso[task.setVariable variable=TasksToRun]${jobsToRun.join(';')}`);
     console.log('##vso[task.setVariable variable=StepResult]success');
 }
 
