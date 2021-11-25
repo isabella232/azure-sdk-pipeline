@@ -57,7 +57,7 @@ steps:
       SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
-  - template: pipeline/after-task.yml
+  - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: getTasksToRun
@@ -73,7 +73,7 @@ steps:
       SDK_REPO: $(SDK_REPO)
       TASKS_TO_RUN: $(TasksToRun)
 
-  - template: pipeline/after-task.yml
+  - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: init
@@ -95,7 +95,7 @@ steps:
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
 
-  - template: pipeline/after-task.yml
+  - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: generateAndBuild
