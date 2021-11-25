@@ -5,6 +5,9 @@ parameters:
   - name: sdk
     type: string
 
+  - name: serviceType
+    type: string
+
   - name: resourceProvider
     type: string
 
@@ -79,7 +82,7 @@ steps:
       taskName: init
 
   - bash: |
-      if [[ $TASKS_TO_RUN == *"init"* ]]; then
+      if [[ $TASKS_TO_RUN == *"generateAndBuild"* ]]; then
         exit 0
       fi
       runGenerateAndBuildTask
@@ -94,6 +97,7 @@ steps:
       RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
+      SERVICE_TYPE: ${{ parameters.serviceType }}
 
   - template: after-task.yml
     parameters:

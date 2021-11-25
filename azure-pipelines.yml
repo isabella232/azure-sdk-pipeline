@@ -27,6 +27,12 @@ parameters:
       - ci
       - release
 
+  - name: serviceType
+    type: string
+    values:
+      - resource-manager
+      - data-plane
+
   - name: specRepoType
     type: string
     default: github
@@ -83,6 +89,7 @@ stages:
               sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
               sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
               skippedTask: ${{ parameters.skippedTask }}
+              serviceType: ${{ parameters.serviceType }}
           - bash: |
               curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
             displayName: Set Complete
