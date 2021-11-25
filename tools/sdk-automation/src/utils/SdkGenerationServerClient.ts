@@ -27,7 +27,7 @@ export class SdkGenerationServerClient {
         // request.on('error', (err) => {
         //     throw err;
         // });
-        await axios.post(`http://${this.host}/codegenerations/${sdkGenerationName}/taskResult`, {
+        await axios.post(`https://${this.host}/codegenerations/${sdkGenerationName}/taskResult`, {
             pipelineBuildId: buildId,
             taskResult: taskResult
         })
