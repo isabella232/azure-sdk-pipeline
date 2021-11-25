@@ -85,6 +85,8 @@ steps:
       if [[ $TASKS_TO_RUN == *"generateAndBuild"* ]]; then
         exit 0
       fi
+      headSha=`git rev-parse HEAD`
+      export HEAD_SHA=${headSha}
       runGenerateAndBuildTask
     workingDirectory: $(SDK_REPO)
     displayName: GenerateAndBuildTask
@@ -98,6 +100,8 @@ steps:
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
       SERVICE_TYPE: ${{ parameters.serviceType }}
+      HEAD_REF: ${{ parameters.sdkRepoBaseBranch }}
+      REPO_HTTP_URL: ${{ parameters.sdkRepoUrl }}
 
   - template: after-task.yml
     parameters:
