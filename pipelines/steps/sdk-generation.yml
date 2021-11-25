@@ -107,3 +107,53 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: generateAndBuild
+
+  - bash: |
+      if [[ $TASKS_TO_RUN == *"mockTest"* ]]; then
+        exit 0
+      fi
+      # start mock server
+      IFS=';'
+      read -a packageArr <<< ${PACKAGE_FOLDERS}
+      for i in "${packageArr[@]}"
+      do
+        export PACKAGE_FOLDER=$i
+        echo "Run Mock Test in ${i}"
+        runMockTestTask
+      done
+    displayName: MockTestTask
+    workingDirectory: $(SDK_REPO)
+    env:
+      SDK_REPO: $(SDK_REPO)
+      PACKAGE_FOLDERS: $(PackageFolders)
+      TASKS_TO_RUN: $(TasksToRun)
+
+  - template: after-task.yml
+    parameters:
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      taskName: mockTest
+
+
+  - bash: |
+      if [[ $TASKS_TO_RUN == *"liveTest"* ]]; then
+        exit 0
+      fi
+      IFS=';'
+      read -a packageArr <<< ${PACKAGE_FOLDERS}
+      for i in "${packageArr[@]}"
+      do
+        export PACKAGE_FOLDER=$i
+        echo "Run Live Test in ${i}"
+        runLiveTestTask
+      done
+    displayName: LiveTestTask
+    workingDirectory: $(SDK_REPO)
+    env:
+      SDK_REPO: $(SDK_REPO)
+      PACKAGE_FOLDERS: $(PackageFolders)
+      TASKS_TO_RUN: $(TasksToRun)
+
+  - template: after-task.yml
+    parameters:
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      taskName: liveTest
