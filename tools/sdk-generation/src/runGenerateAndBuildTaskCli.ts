@@ -21,8 +21,8 @@ async function main() {
     }
     const generateAndBuildOptions = generateAndBuildTask as GenerateAndBuildOptions;
     const runOptions = generateAndBuildOptions.generateAndBuildScript;
+    const relatedReadmeMdFile = path.join(config.specFolder, config.relatedReadmeMdFile);
     const specFolder = config.specFolder.includes('specification')? config.specFolder : path.join(config.specFolder, 'specification');
-    const relatedReadmeMdFile = config.relatedReadmeMdFile.includes('specification')? path.resolve('specification', config.relatedReadmeMdFile) : config.relatedReadmeMdFile;
     const inputContent: GenerateAndBuildInput = {
         specFolder: specFolder,
         headSha: config.headSha,
