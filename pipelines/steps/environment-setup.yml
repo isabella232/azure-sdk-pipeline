@@ -26,28 +26,28 @@ steps:
     workingDirectory: ../
 
   - task: Npm@1
-    displayName: Npm Install Dependencies of Sdk Automation Tool
+    displayName: Npm Install Dependencies of Sdk Generation Tool
     inputs:
-      workingDir: tools/sdk-automation
+      workingDir: tools/sdk-generation
       command: install
 
 
   - task: Npm@1
-    displayName: Build Sdk Automation Tool
+    displayName: Build Sdk Generation Tool
     inputs:
-      workingDir: tools/sdk-automation
+      workingDir: tools/sdk-generation
       command: custom
       customCommand: run build
 
   - task: Npm@1
-    displayName: Pack Sdk Automation Tool
+    displayName: Pack Sdk Generation Tool
     inputs:
-      workingDir: tools/sdk-automation
+      workingDir: tools/sdk-generation
       command: custom
       customCommand: pack
 
   - bash: |
-      PACKAGE_TGZ=`ls sdk-automation-*.tgz`
+      PACKAGE_TGZ=`ls sdk-generation-lib-*.tgz`
       npm install -g ${PACKAGE_TGZ}
     displayName: Install Sdk Automation Tool
     workingDirectory: tools/sdk-automation
