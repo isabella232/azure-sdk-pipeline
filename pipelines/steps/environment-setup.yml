@@ -22,13 +22,13 @@ steps:
 
   - bash: |
         git clone --branch ${{ parameters.sdkRepoBaseBranch }} ${{ parameters.sdkRepoUrl }}
-    displayName: Clone Sdk Repo 
+    displayName: Clone Sdk Repo
     workingDirectory: ../
 
-  - task: NodeTool@0 
+  - task: NodeTool@0
     inputs:
       versionSpec: 14.x
-      
+
   - task: Npm@1
     displayName: Npm Install Dependencies of Sdk Generation Tool
     inputs:
@@ -55,4 +55,7 @@ steps:
       npm install -g ${PACKAGE_TGZ}
     displayName: Install Sdk Automation Tool
     workingDirectory: tools/sdk-generation
- 
+
+  - bash: |
+      npm install -g autorest
+    displayName: Install Autorest

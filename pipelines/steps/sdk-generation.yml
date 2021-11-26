@@ -66,11 +66,6 @@ steps:
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
   - bash: |
-      echo ${PATH}
-
-    displayName: rush
-
-  - bash: |
       runInitTask
     displayName: InitTask
     condition: contains(variables['TasksToRun'], 'init')
