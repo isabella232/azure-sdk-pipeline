@@ -28,11 +28,7 @@ steps:
   - task: NodeTool@0 
     inputs:
       versionSpec: 14.x
-  
-  - bash: |
-        ln -s /usr/bin/nodejs /usr/bin/node
-    displayName: Link Node Command 
-
+      
   - task: Npm@1
     displayName: Npm Install Dependencies of Sdk Generation Tool
     inputs:

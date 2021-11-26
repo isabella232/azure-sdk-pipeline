@@ -66,6 +66,8 @@ stages:
   - stage: SdkGeneration
     jobs:
       - job: SdkGeneration
+        pool:
+          vmImage: "Ubuntu 18.04"
         steps:
           - bash: |
               curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
