@@ -103,7 +103,7 @@
             }
           ],
           "default": {
-            "scriptError": "[error|Error]"
+            "show": true
           }
         },
         "exitWithNonZeroCode": {
@@ -136,11 +136,11 @@
         "$ref": "#/definitions/RunLogFilterOptions"
       },
       "scriptError": {
-        // If any line match, assume the script fails.
+        // If any line match, assume the script fails. Not Implement
         "$ref": "#/definitions/RunLogFilterOptions"
       },
       "scriptWarning": {
-        // If any line match, assume the script warns.
+        // If any line match, assume the script warns. Not Implement
         "$ref": "#/definitions/RunLogFilterOptions"
       }
     },
