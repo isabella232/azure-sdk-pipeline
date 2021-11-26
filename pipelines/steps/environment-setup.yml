@@ -50,5 +50,5 @@ steps:
       PACKAGE_TGZ=`ls sdk-generation-lib-*.tgz`
       npm install -g ${PACKAGE_TGZ}
     displayName: Install Sdk Automation Tool
-    workingDirectory: tools/sdk-automation
+    workingDirectory: tools/sdk-generation
  
