@@ -40,7 +40,9 @@ export async function processGenerateAndBuildOutput(config: RunGenerateAndBuildT
         // upload generated codes in packageFolder
         const azureBlobClient = new AzureBlobClient(config.azureStorageBlobSasUrl, config.azureBlobContainerName);
         for (const filePath of getFileListInPackageFolder(packageFolder)) {
-            await azureBlobClient.uploadLocal(path.join(packageFolder, filePath), `${config.language}/${config.sdkGenerationName}/${packageName}/${filePath}`);
+            if (fs.existsSync(path.join(packageFolder, filePath))) {
+                await azureBlobClient.uploadLocal(path.join(packageFolder, filePath), `${config.language}/${config.sdkGenerationName}/${packageName}/${filePath}`);
+            }
         }
 
         for (const artifact of artifacts) {
