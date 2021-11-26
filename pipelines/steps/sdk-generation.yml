@@ -132,9 +132,6 @@ steps:
       taskName: mockTest
 
   - bash: |
-      if [[ $TASKS_TO_RUN != *"liveTest"* ]]; then
-        exit 0
-      fi
       IFS=';'
       read -a packageArr <<< ${PACKAGE_FOLDERS}
       for i in "${packageArr[@]}"
@@ -144,6 +141,7 @@ steps:
         runLiveTestTask
       done
     displayName: LiveTestTask
+    condition: contains(variables['TasksToRun'], 'liveTest')
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
