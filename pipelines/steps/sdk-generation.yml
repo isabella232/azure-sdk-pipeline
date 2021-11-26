@@ -70,7 +70,6 @@ steps:
       npm install -g dw-azure-track2-js-sdk-release-tools
 
     displayName: rush
-    workingDirectory: $(SDK_REPO))
 
   - bash: |
       runInitTask
