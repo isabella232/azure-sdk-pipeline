@@ -66,6 +66,7 @@ steps:
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
   - bash: |
+      ls /usr/bin/node*
       npm install -g @microsoft/rush
       npm install -g dw-azure-track2-js-sdk-release-tools
 
