@@ -31,7 +31,7 @@ const listenOnStream = (
         }
         let show = false;
         if (opts !== undefined) {
-            if (isLineMatch(line, opts.show) || isLineMatch(line, opts.scriptError) || isLineMatch(line, opts.scriptWarning)) {
+            if (isLineMatch(line, opts.show)) {
                 show = true;
             }
         }
