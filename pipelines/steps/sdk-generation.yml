@@ -66,11 +66,9 @@ steps:
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
   - bash: |
-      if [[ $TASKS_TO_RUN != *"init"* ]]; then
-        exit 0
-      fi
       runInitTask
     displayName: InitTask
+    condition: contains(variables['TasksToRun'], 'init')
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
