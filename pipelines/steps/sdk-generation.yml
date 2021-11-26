@@ -66,6 +66,13 @@ steps:
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
   - bash: |
+      npm install -g @microsoft/rush
+      npm install -g dw-azure-track2-js-sdk-release-tools
+
+    displayName: rush
+    workingDirectory: $(SDK_REPO))
+
+  - bash: |
       runInitTask
     displayName: InitTask
     condition: contains(variables['TasksToRun'], 'init')
