@@ -10,8 +10,8 @@ export async function main() {
     const config: PublishLogCliConfig = publishLogCliConfig.getProperties();
     const azureBlobClient = new AzureBlobClient(config.azureStorageBlobSasUrl, config.azureBlobContainerName);
     const sdkGenerationServerClient = new SdkGenerationServerClient(config.sdkGenerationServiceHost)
-    if (fs.existsSync(config.pipeFullLog)) {
-        await azureBlobClient.uploadLocal(config.pipeFullLog, `${config.buildId}/${config.sdkGenerationName}-${config.taskName}.full.log`);
+    if (fs.existsSync(config.taskFullLog)) {
+        await azureBlobClient.uploadLocal(config.taskFullLog, `${config.buildId}/${config.sdkGenerationName}-${config.taskName}.full.log`);
     }
     if (fs.existsSync(config.pipeLog)) {
         await azureBlobClient.uploadLocal(config.pipeLog, `${config.buildId}/${config.sdkGenerationName}-${config.taskName}.log`);

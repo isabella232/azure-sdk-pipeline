@@ -42,3 +42,4 @@ steps:
       BUILD_ID: $(Build.BuildId)
       SDK_GENERATION_SERVICE_HOST: $(CodegenApp_Server)
       PRE_TASK_RESULT: $(StepResult)
+      PIPE_FULL_LOG: "/tmp/pipe.full.log"
