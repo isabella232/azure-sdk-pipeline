@@ -4,6 +4,7 @@ import {requireJsonc} from "../utils/requireJsonc";
 import * as fs from "fs";
 import {AzureBlobClient} from "../utils/AzureBlobClient";
 import * as path from "path";
+import {getFileListInPackageFolder} from "../utils/git";
 
 function getFiles(dir: string, files?: string[]) {
     files = files || [];
@@ -38,9 +39,8 @@ export async function processGenerateAndBuildOutput(config: RunGenerateAndBuildT
         allPackageFolders.push(packageFolder);
         // upload generated codes in packageFolder
         const azureBlobClient = new AzureBlobClient(config.azureStorageBlobSasUrl, config.azureBlobContainerName);
-        for (const filePath of getFiles(packageFolder)) {
-            const relativeFilePath = path.relative(packageFolder, filePath);
-            await azureBlobClient.uploadLocal(filePath, `${config.language}/${config.sdkGenerationName}/${packageName}/${relativeFilePath}`);
+        for (const filePath of getFileListInPackageFolder(packageFolder)) {
+            await azureBlobClient.uploadLocal(path.join(packageFolder, filePath), `${config.language}/${config.sdkGenerationName}/${packageName}/${filePath}`);
         }
 
         for (const artifact of artifacts) {
