@@ -44,6 +44,7 @@ function getLogger() {
     logger.add(new winston.transports.File({
         level: 'info',
         filename: config.pipeFullLog,
+        options: { flags: 'w' },
         format: winston.format.combine(
             winston.format.printf((info: WinstonInfo) => {
                 const {level} = info;
