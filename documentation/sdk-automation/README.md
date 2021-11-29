@@ -99,7 +99,7 @@ Output file for generate script.
       "packageName": "@azure/arm-compute",
       "result": "succeeded",
       "path": [
-        "sdk/compute",
+        "sdk/compute/arm-compute",
         "rush.json"
       ],
       "packageFolder": [
@@ -110,8 +110,7 @@ Output file for generate script.
         "hasBreakingChange": true
       },
       "artifacts": [
-        "sdk/cdn/cdn.nuget",
-        "sdk/cdn/cdn.snuget"
+        "sdk/compute/azure-arm-compute-1.0.0.tgz",
       ]
     }
   ]
