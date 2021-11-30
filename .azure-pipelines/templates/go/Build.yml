@@ -12,17 +12,17 @@ steps:
     cd azure-sdk-for-go
     # export GOPATH=/home/vsts/work/1/s/go
     # echo $GOPATH
-    git config credential.helper store ; git config --global user.email "chunyu@microsoft.com";git config --global user.name "chunyu3"
+    git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot"
   displayName: 'pull repo'
 - bash: |
     cd $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)
     
     # go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@latest && go get github.com/Azure/azure-sdk-for-go/sdk/armcore@latest && go get github.com/Azure/azure-sdk-for-go/sdk/azcore@latest && go get github.com/Azure/azure-sdk-for-go/sdk/to@latest && go mod tidy
-    go get github.com/Azure/azure-sdk-for-go/sdk/armcore@v0.8.0
-    go get github.com/Azure/azure-sdk-for-go/sdk/azcore@v0.16.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@v0.9.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/to@v0.1.4
-    go get golang.org/x/net@v0.0.0-20201110031124-69a78807bb2b
+    # go get github.com/Azure/azure-sdk-for-go/sdk/armcore@v0.8.0
+    # go get github.com/Azure/azure-sdk-for-go/sdk/azcore@v0.16.2
+    # go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@v0.9.2
+    # go get github.com/Azure/azure-sdk-for-go/sdk/to@v0.1.4
+    # go get golang.org/x/net@v0.0.0-20201110031124-69a78807bb2b
 
     go mod tidy
     go build 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
