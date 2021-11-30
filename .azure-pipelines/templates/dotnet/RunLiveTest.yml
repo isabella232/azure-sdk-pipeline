@@ -1,0 +1,4 @@
+steps:
+- bash: |
+    echo "Not implemented"
+  displayName: "Live Test"

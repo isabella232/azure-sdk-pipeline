@@ -12,18 +12,18 @@ steps:
     go get gotest.tools/gotestsum
     ls -l $(Pipeline.Workspace)/s/go/bin
 
-    go get github.com/Azure/azure-sdk-for-go/sdk/armcore@v0.8.0
-    go get github.com/Azure/azure-sdk-for-go/sdk/azcore@v0.16.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@v0.9.2
-    go get github.com/Azure/azure-sdk-for-go/sdk/to@v0.1.4
-    go get golang.org/x/net@v0.0.0-20201110031124-69a78807bb2b
+    # go get github.com/Azure/azure-sdk-for-go/sdk/armcore@v0.8.0
+    # go get github.com/Azure/azure-sdk-for-go/sdk/azcore@v0.16.2
+    # go get github.com/Azure/azure-sdk-for-go/sdk/azidentity@v0.9.2
+    # go get github.com/Azure/azure-sdk-for-go/sdk/to@v0.1.4
+    # go get golang.org/x/net@v0.0.0-20201110031124-69a78807bb2b
+    # go get github.com/Azure/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)
     go mod tidy
-    go get github.com/Azure/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider)
     $(Pipeline.Workspace)/s/go/bin/gotestsum --format testname -- -coverprofile cover.out 1>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Go Mock Test failed"
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c depthcoverage -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=depthcoverage
+      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi

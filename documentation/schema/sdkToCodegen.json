@@ -1,0 +1,11 @@
+{
+    "checkoutSDKRepo": {
+        "type": "boolean",
+        "default": false,
+        "description": "Indidate if need to pull sdk repo."
+    },
+    "tasks": {
+        "type": "array",
+        "item": "$ref: '#taskSchema.json' "
+    }
+}
