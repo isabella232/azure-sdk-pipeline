@@ -26,6 +26,7 @@ steps:
 
     workingDirectory: $(SDK_REPO)
     displayName: Publish Task Log
+    dependsOn: ${{ parameters.taskName }}
     condition: or(succeeded(), failed())
     env:
       TASK_NAME: ${{ parameters.taskName }}
