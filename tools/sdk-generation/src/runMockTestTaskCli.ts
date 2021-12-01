@@ -12,6 +12,7 @@ import {processMockTestOutput} from "./lib/processMockTestOutput";
 import {saveTaskResult, setTaskResult} from "./lib/taskResult";
 
 const config: RunMockTestTaskCliConfig = runMockTestTaskCliConfig.getProperties();
+export let mockTestTaskRunSuccessfully = true;
 
 async function main() {
     setTaskResult(config, 'MockTest');
@@ -21,33 +22,42 @@ async function main() {
     }
     const mockTestOptions = mockTestTask as MockTestOptions;
     const runOptions = mockTestOptions.mockTestScript;
-    const inputContent: MockTestInput = {
-        packageFolder: config.packageFolder,
-        mockServerHost: config.mockServerHost
-    };
-    const inputJson = JSON.stringify(inputContent, undefined, 2)
-    logger.info(inputJson);
-    fs.writeFileSync(config.mockTestInputJson, inputJson, {encoding: 'utf-8'});
-    const executeResult = await runScript(runOptions, {
-        cwd: path.resolve(config.sdkRepo),
-        args: [config.mockTestInputJson, config.mockTestOutputJson]
-    });
-    if (executeResult === 'failed') {
-        throw `Execute init script failed.`
-    }
-    const result = await processMockTestOutput(config);
-    if (result) {
-        console.log('##vso[task.setVariable variable=StepResult]success');
-    } else {
-        console.log('##vso[task.setVariable variable=StepResult]failure');
-    }
+    for (const packageFolder of config.packageFolders.split(';')) {
+        logger.info(`Run MockTest for ${packageFolder}`);
 
+        const inputContent: MockTestInput = {
+            packageFolder: packageFolder,
+            mockServerHost: config.mockServerHost
+        };
+        const inputJson = JSON.stringify(inputContent, undefined, 2)
+        logger.info(inputJson);
+        fs.writeFileSync(config.mockTestInputJson, inputJson, {encoding: 'utf-8'});
+        const executeResult = await runScript(runOptions, {
+            cwd: path.resolve(config.sdkRepo),
+            args: [config.mockTestInputJson, config.mockTestOutputJson]
+        });
+        if (executeResult === 'failed') {
+            logger.error(`Execute mockTest script for ${packageFolder} failed.`);
+            mockTestTaskRunSuccessfully = false;
+        } else {
+            const result = await processMockTestOutput(config);
+            if (!result) {
+                mockTestTaskRunSuccessfully = false;
+            }
+        }
+    }
 }
 
 main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
-    console.log('##vso[task.setVariable variable=StepResult]failure');
+    mockTestTaskRunSuccessfully = false;
 }).finally(() => {
     saveTaskResult();
+    if (!mockTestTaskRunSuccessfully) {
+        console.log('##vso[task.setVariable variable=StepResult]failure');
+        process.exit(1);
+    } else {
+        console.log('##vso[task.setVariable variable=StepResult]success');
+    }
 })

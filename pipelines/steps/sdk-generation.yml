@@ -67,6 +67,11 @@ steps:
 
   - bash: |
       runInitTask
+      retVal=$?
+      if [ $retVal -ne 0 ]; then
+          echo -e "\033[0;31mInit Task is failed"
+          exit 1
+      fi
     displayName: InitTask
     condition: contains(variables['TasksToRun'], 'init')
     workingDirectory: $(SDK_REPO)
@@ -83,8 +88,13 @@ steps:
       headSha=`git rev-parse HEAD`
       export HEAD_SHA=${headSha}
       runGenerateAndBuildTask
+      retVal=$?
+      if [ $retVal -ne 0 ]; then
+          echo -e "\033[0;31mGenerateAndBuild Task is failed"
+          exit 1
+      fi
     workingDirectory: $(SDK_REPO)
-    condition: contains(variables['TasksToRun'], 'generateAndBuild')
+    condition: and(contains(variables['TasksToRun'], 'generateAndBuild'), ne(variables['StepResult'], 'failure'))
     displayName: GenerateAndBuildTask
     env:
       TASKS_TO_RUN: $(TasksToRun)
@@ -106,16 +116,15 @@ steps:
 
   - bash: |
       # start mock server
-      IFS=';'
-      read -a packageArr <<< ${PACKAGE_FOLDERS}
-      for i in "${packageArr[@]}"
-      do
-        export PACKAGE_FOLDER=$i
-        echo "Run Mock Test in ${i}"
-        runMockTestTask
-      done
+      # TODO
+      runMockTestTask
+      retVal=$?
+      if [ $retVal -ne 0 ]; then
+          echo -e "\033[0;31mMockTest Task is failed"
+          exit 1
+      fi
     displayName: MockTestTask
-    condition: contains(variables['TasksToRun'], 'mockTest')
+    condition: and(contains(variables['TasksToRun'], 'mockTest'), ne(variables['StepResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
@@ -128,16 +137,14 @@ steps:
       taskName: mockTest
 
   - bash: |
-      IFS=';'
-      read -a packageArr <<< ${PACKAGE_FOLDERS}
-      for i in "${packageArr[@]}"
-      do
-        export PACKAGE_FOLDER=$i
-        echo "Run Live Test in ${i}"
-        runLiveTestTask
-      done
+      runLiveTestTask
+      retVal=$?
+      if [ $retVal -ne 0 ]; then
+          echo -e "\033[0;31mLiveTest Task is failed"
+          exit 1
+      fi
     displayName: LiveTestTask
-    condition: contains(variables['TasksToRun'], 'liveTest')
+    condition: and(contains(variables['TasksToRun'], 'liveTest'), ne(variables['StepResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)

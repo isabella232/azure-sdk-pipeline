@@ -16,24 +16,17 @@ steps:
         echo "Cannot Find TASK_NAME, exit"
         exit 0
       fi
-      
       publishLog
-
       retVal=$?
       if [ $retVal -ne 0 ]; then
         echo -e "\033[0;31mPublish Log failed"
         curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
         exit 1
       fi
-      
-      if [[ $PRE_TASK_RESULT == "failure" ]]; then
-        echo -e "\033[0;31m${TASK_NAME} task is failed."
-        curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
-        exit 1
-      fi
+
     workingDirectory: $(SDK_REPO)
     displayName: Publish Task Log
-    condition: contains(variables['TasksToRun'], '${{ parameters.taskName }}')
+    condition: succeededOrFailed()
     env:
       TASK_NAME: ${{ parameters.taskName }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
@@ -41,5 +34,4 @@ steps:
       SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
       BUILD_ID: $(Build.BuildId)
       SDK_GENERATION_SERVICE_HOST: $(CodegenApp_Server)
-      PRE_TASK_RESULT: $(StepResult)
       PIPE_FULL_LOG: "/tmp/pipe.full.log"

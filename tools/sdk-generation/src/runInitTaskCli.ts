@@ -12,6 +12,7 @@ import {initOutput} from "./types/InitOutput";
 import {saveTaskResult, setTaskResult} from "./lib/taskResult";
 
 const config: RunInitTaskCliConfig = runInitTaskCliConfig.getProperties();
+export let initTaskRunSuccessfully = true;
 
 async function main() {
     setTaskResult(config, 'Init');
@@ -35,13 +36,19 @@ async function main() {
             console.log(`##vso[task.setVariable variable=${v};isOutput=true]${initOutputJson.envs[v]}`);
         }
     }
-    console.log('##vso[task.setVariable variable=StepResult]success');
 }
 
 main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
-    console.log('##vso[task.setVariable variable=StepResult]failure');
+
+    initTaskRunSuccessfully = false;
 }).finally(() => {
     saveTaskResult();
+    if (!initTaskRunSuccessfully) {
+        console.log('##vso[task.setVariable variable=StepResult]failure');
+        process.exit(1);
+    } else {
+        console.log('##vso[task.setVariable variable=StepResult]success');
+    }
 })

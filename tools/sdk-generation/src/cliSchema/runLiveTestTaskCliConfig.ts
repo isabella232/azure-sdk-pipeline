@@ -2,15 +2,15 @@ import * as convict from 'convict';
 import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 
 export class RunLiveTestTaskCliConfig extends TaskBasicConfig {
-    packageFolder: string;
+    packageFolders: string;
     liveTestInputJson: string;
     liveTestOutputJson: string;
 }
 
 export const runLiveTestTaskCliConfig = convict<RunLiveTestTaskCliConfig>({
-    packageFolder: {
+    packageFolders: {
         default: '',
-        env: 'PACKAGE_FOLDER',
+        env: 'PACKAGE_FOLDERS',
         format: String
     },
     liveTestInputJson: {

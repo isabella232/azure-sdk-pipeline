@@ -1,6 +1,6 @@
 {
   "name": "sdk-generation-lib",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "publishLog": "dist/publishLogCli.js"
   },
   "dependencies": {
-    "@azure/storage-blob": "^12.1.1",
+    "@azure/storage-blob": "^12.8.0",
     "@azure/swagger-validation-common": "^0.1.2",
     "@ts-common/azure-js-dev-tools": "^22.5.1",
     "ajv": "^6.12.6",

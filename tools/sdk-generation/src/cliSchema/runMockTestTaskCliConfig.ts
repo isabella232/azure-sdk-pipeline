@@ -2,16 +2,16 @@ import * as convict from 'convict';
 import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 
 export class RunMockTestTaskCliConfig extends TaskBasicConfig {
-    packageFolder: string;
+    packageFolders: string;
     mockTestInputJson: string;
     mockTestOutputJson: string;
     mockServerHost: string;
 }
 
 export const runMockTestTaskCliConfig = convict<RunMockTestTaskCliConfig>({
-    packageFolder: {
+    packageFolders: {
         default: '',
-        env: 'PACKAGE_FOLDER',
+        env: 'PACKAGE_FOLDERS',
         format: String
     },
     mockTestInputJson: {

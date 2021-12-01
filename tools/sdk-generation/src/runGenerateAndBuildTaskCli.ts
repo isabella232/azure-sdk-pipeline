@@ -12,6 +12,7 @@ import {processGenerateAndBuildOutput} from "./lib/processGenerateAndBuildOutput
 import {saveTaskResult, setTaskResult} from "./lib/taskResult";
 
 const config: RunGenerateAndBuildTaskCliConfig = runGenerateAndBuildTaskCliConfig.getProperties();
+export let generateAndBuildTaskRunSuccessfully = true;
 
 async function main() {
     setTaskResult(config, 'GenerateAndBuild');
@@ -43,16 +44,20 @@ async function main() {
     }
     const result = await processGenerateAndBuildOutput(config);
     if (result.hasFailedResult) {
-        console.log('##vso[task.setVariable variable=StepResult]failure');
-    } else {
-        console.log('##vso[task.setVariable variable=StepResult]success');
+        generateAndBuildTaskRunSuccessfully = false;
     }
 }
 
 main().catch(e => {
     logger.error(`${e.message}
     ${e.stack}`);
-    console.log('##vso[task.setVariable variable=StepResult]failure');
+    generateAndBuildTaskRunSuccessfully = false;
 }).finally(() => {
     saveTaskResult();
+    if (!generateAndBuildTaskRunSuccessfully) {
+        console.log('##vso[task.setVariable variable=StepResult]failure');
+        process.exit(1);
+    } else {
+        console.log('##vso[task.setVariable variable=StepResult]success');
+    }
 })
