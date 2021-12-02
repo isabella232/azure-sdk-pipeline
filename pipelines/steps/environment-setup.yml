@@ -16,8 +16,9 @@ parameters:
 
 steps:
   - task: NodeTool@0
-      inputs:
-        versionSpec: 14.x
+    displayName: Specify Node Version
+    inputs:
+      versionSpec: 14.x
 
   - bash: |
       npm install
