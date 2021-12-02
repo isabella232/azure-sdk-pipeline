@@ -24,7 +24,7 @@ steps:
     GO111MODULE=off go get github.com/shopspring/decimal
     make tools
     git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot"
-    
+
   displayName: "pull repo"
   condition: eq(variables['TARGET'], 'terraform')
 - script: |
@@ -59,7 +59,7 @@ steps:
     else
       echo "$DIR not exists."
     fi
-    
+
     cp -r ./generated/$(Package) ./go/src/github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/
     ls -l ./go/src/github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/$(Package)
 
@@ -75,7 +75,7 @@ steps:
     CLIENT_IMPORT_ORI="resource \"github.com\/terraform-providers\/terraform-provider-azurerm\/azurerm\/internal\/services\/resource\/client\""
     CLIENT_STRUCT_ORI="*resource.Client"
     CLIENT_NEW_ORI="client.Resource = resource.NewClient(o)"
-    
+
     SERVICE_IMPORT=`cat azurerm/internal/services/$(Package)/terraform-configuration/configuration_services | sed -n 1p`
     SERVICE_REGISTRATION=`cat azurerm/internal/services/$(Package)/terraform-configuration/configuration_services | sed -n 2p`
     SERVICE_IMPORT_ORI="\"github.com\/terraform-providers\/terraform-provider-azurerm\/azurerm\/internal\/services\/web\""
@@ -95,7 +95,7 @@ steps:
       sed -i "/$SERVICE_IMPORT_ORI/a $SERVICE_IMPORT" azurerm/internal/provider/services.go
         sed -i "s/$SERVICE_REGISTRATION_ORI/$SERVICE_REGISTRATION/g" azurerm/internal/provider/services.go
     fi
-    
+
 
     echo -e "\e[32m[$(date -u)] LOG:]: Change client.go and service.go successfully."
     cat azurerm/internal/provider/services.go
@@ -136,12 +136,12 @@ steps:
     # export RP=$(ResourceProvider)
     export RP=$(Package)
     bash ./scripts/bash/compile.sh 1>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    
+
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Compile Generated code failed"
       # upload error log
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f build.log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-build.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f build.log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-build.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi
@@ -152,7 +152,7 @@ steps:
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: RUN TFLinter failed"
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-build.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-build.log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi
