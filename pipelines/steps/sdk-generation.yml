@@ -40,18 +40,6 @@ parameters:
 
 steps:
   - bash: |
-      getRepoName SDK_REPO ${{ parameters.sdkRepoUrl }}
-    displayName: Get SDK Repo Folder
-    name: getSdkRepo
-    workingDirectory: ../
-
-  - bash: |
-      getRepoName SPEC_REPO ${{ parameters.specRepoUrl }}
-    displayName: Get Spec Repo Folder
-    name: getSpecRepo
-    workingDirectory: ../
-
-  - bash: |
       getTasksToRun
       retVal=$?
       if [ $retVal -ne 0 ]; then

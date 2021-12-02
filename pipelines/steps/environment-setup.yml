@@ -15,47 +15,26 @@ parameters:
     type: string
 
 steps:
-  - bash: |
-        git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
-    displayName: Clone Spec Repo
-    workingDirectory: ../
-
-  - bash: |
-        git clone --branch ${{ parameters.sdkRepoBaseBranch }} ${{ parameters.sdkRepoUrl }}
-    displayName: Clone Sdk Repo
-    workingDirectory: ../
-
   - task: NodeTool@0
-    inputs:
-      versionSpec: 14.x
-
-  - task: Npm@1
-    displayName: Npm Install Dependencies of Sdk Generation Tool
-    inputs:
-      workingDir: tools/sdk-generation
-      command: install
-
-
-  - task: Npm@1
-    displayName: Build Sdk Generation Tool
-    inputs:
-      workingDir: tools/sdk-generation
-      command: custom
-      customCommand: run build
-
-  - task: Npm@1
-    displayName: Pack Sdk Generation Tool
-    inputs:
-      workingDir: tools/sdk-generation
-      command: custom
-      customCommand: pack
+      inputs:
+        versionSpec: 14.x
 
   - bash: |
+      npm install
+      npm run build
+      npm pack
       PACKAGE_TGZ=`ls sdk-generation-lib-*.tgz`
       npm install -g ${PACKAGE_TGZ}
-    displayName: Install Sdk Automation Tool
+      npm install -g autorest
+    displayName: Setup Pipeline Runtime Environment
     workingDirectory: tools/sdk-generation
 
   - bash: |
-      npm install -g autorest
-    displayName: Install Autorest
+      git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
+      git clone --branch ${{ parameters.sdkRepoBaseBranch }} ${{ parameters.sdkRepoUrl }}
+      getRepoName SPEC_REPO ${{ parameters.specRepoUrl }}
+      getRepoName SDK_REPO ${{ parameters.sdkRepoUrl }}
+    displayName: Clone Spec Repo and Sdk Repo
+    workingDirectory: ../
+
+
