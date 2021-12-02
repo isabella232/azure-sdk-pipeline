@@ -26,7 +26,7 @@ steps:
 
     workingDirectory: $(SDK_REPO)
     displayName: Publish Task Log
-    condition: not(skipped())
+    condition: and(contains(variables['TasksToRun'], '${{ parameters.taskName }}'), succeededOrFailed())
     env:
       TASK_NAME: ${{ parameters.taskName }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
