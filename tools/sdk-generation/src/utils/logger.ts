@@ -38,7 +38,7 @@ function getLogger() {
         level: keyof typeof sdkAutoLogLevels.levels;
         message: string;
         timestamp: string;
-        show?: boolean;
+        storeLog?: boolean;
     };
 
     logger.add(new winston.transports.File({
@@ -49,7 +49,7 @@ function getLogger() {
             winston.format.printf((info: WinstonInfo) => {
                 const {level} = info;
                 let msg = info.message;
-                if (info.show) {
+                if (info.storeLog) {
                     if (!taskResult.messages) {
                         taskResult.messages = [];
                     }

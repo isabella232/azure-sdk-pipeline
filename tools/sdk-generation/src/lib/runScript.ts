@@ -1,4 +1,4 @@
-import {RunLogFilterOptions, RunLogOptions, RunOptions} from "../types/CodegenToSdkConfig";
+import {RunLogOptions, RunOptions} from "../types/CodegenToSdkConfig";
 import * as path from "path";
 import {spawn} from "child_process";
 import {logger} from "../utils/logger";
@@ -6,16 +6,11 @@ import {Readable} from "stream";
 import {scriptRunningState} from "./scriptRunningState";
 import * as fs from "fs";
 
-export const isLineMatch = (line: string, filter: RunLogFilterOptions | undefined) => {
+export const isLineMatch = (line: string, filter: RegExp | undefined) => {
     if (filter === undefined) {
         return false;
     }
-    if (typeof filter === 'boolean') {
-        return filter;
-    }
-    if (typeof filter === 'string') {
-        filter = new RegExp(filter);
-    }
+    filter = new RegExp(filter);
     return filter.exec(line) !== null;
 };
 
@@ -29,13 +24,15 @@ const listenOnStream = (
         if (line.length === 0) {
             return;
         }
-        let show = false;
+        let storeLog = false;
         if (opts !== undefined) {
-            if (isLineMatch(line, opts.show)) {
-                show = true;
+            if (opts.storeAllLog) {
+                storeLog = true;
+            } else if (isLineMatch(line, opts.storeLogByFilter)) {
+                storeLog = true;
             }
         }
-        logger.log(logType, `${prefix} ${line}`, {show: show});
+        logger.log(logType, `${prefix} ${line}`, {show: storeLog});
     };
 
     stream.on('data', (data) => {
@@ -80,10 +77,10 @@ export async function runScript(runOptions: RunOptions, options: {
         logger.error(e.stack);
         executeResult = 'failed';
     }
-    let show = false;
+    let storeLog = false;
     if ((cmdRet.code !== 0 || cmdRet.signal !== null) && runOptions.exitWithNonZeroCode !== undefined) {
-        if (runOptions.exitWithNonZeroCode.show) {
-            show = true;
+        if (runOptions.exitWithNonZeroCode.storeLog) {
+            storeLog = true;
         }
         if (runOptions.exitWithNonZeroCode.result === 'error') {
             executeResult = 'failed';
@@ -92,9 +89,9 @@ export async function runScript(runOptions: RunOptions, options: {
         }
         const message = `Script return with result [${executeResult}] code [${cmdRet.code}] signal [${cmdRet.signal}] cwd [${options.cwd}]: ${scriptPath}`;
         if (runOptions.exitWithNonZeroCode.result === 'error') {
-            logger.error(message, {show});
+            logger.error(message, {show: storeLog});
         } else if (runOptions.exitWithNonZeroCode.result === 'warning') {
-            logger.warn(message, {show});
+            logger.warn(message, {show: storeLog});
         }
     }
     return executeResult;

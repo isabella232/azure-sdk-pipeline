@@ -103,14 +103,14 @@
             }
           ],
           "default": {
-            "show": true
+            "storeAllLog": true
           }
         },
         "exitWithNonZeroCode": {
           "properties": {
             // How should SDK Automation handle non-zero exitCode.
-            "show": {
-              // Should we store this error and show it somewhere.
+            "storeLog": {
+              // Should we store this error.
               "type": "boolean",
               "default": true
             },
@@ -121,7 +121,7 @@
               "default": "error"
             }
           },
-          "default": {
+          "storeAllLog": {
             "show": true,
             "result": "error"
           }
@@ -131,32 +131,15 @@
     },
     "RunLogOptions": {
       // How should SDK Automation handle the log stream.
-      "show": {
-        // Should we show this stream.
-        "$ref": "#/definitions/RunLogFilterOptions"
+      "storeAllLog": {
+        "type": "boolean"
       },
-      "scriptError": {
-        // If any line match, assume the script fails. Not Implement
-        "$ref": "#/definitions/RunLogFilterOptions"
-      },
-      "scriptWarning": {
-        // If any line match, assume the script warns. Not Implement
-        "$ref": "#/definitions/RunLogFilterOptions"
+      "storeLogByFilter": {
+        // Only work when storeAlllog is set to false.
+        // The value is a typescript/javascript regex.
+        "type": "string",
+        "format": "regex"
       }
-    },
-    "RunLogFilterOptions": {
-      "oneOf": [
-        {
-          // If line of log match this regex then hit
-          "type": "string",
-          "format": "regex"
-        },
-        {
-          // If set to true, any line of log will hit
-          "type": "boolean"
-        }
-      ],
-      "default": false
     }
   }
 }

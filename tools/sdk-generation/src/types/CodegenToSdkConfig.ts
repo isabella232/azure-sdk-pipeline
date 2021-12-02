@@ -4,12 +4,9 @@ import * as path from "path";
 
 export const codegenToSdkConfigSchema = requireJsonc(path.join(__dirname, 'CodegenToSdkConfigSchema.json'));
 
-export type RunLogFilterOptions = RegExp | boolean;
-
 export type RunLogOptions = {
-    show?: RunLogFilterOptions;
-    scriptError?: RunLogFilterOptions;
-    scriptWarning?: RunLogFilterOptions;
+    storeAllLog: boolean;
+    storeLogByFilter: RegExp;
 };
 
 export type RunOptions = {
@@ -19,7 +16,7 @@ export type RunOptions = {
     stdout?: RunLogOptions;
     stderr?: RunLogOptions;
     exitWithNonZeroCode?: {
-        show: boolean;
+        storeLog: boolean;
         result: 'error' | 'warning' | 'ignore';
     };
 };
