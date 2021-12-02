@@ -63,7 +63,7 @@ steps:
     gosdkfolder="$(Pipeline.Workspace)/s/azure-sdk-for-go"
     outputfolder="$gosdkfolder/$moduleName"
     cd $(Pipeline.Workspace)/s
-    npx autorest --version=3.6.2 --use=@autorest/gotest@1.0.0 $SWAGGER_PATH/$ResourceProvider/resource-manager/readme.md --use=@autorest/go@4.0.0-preview.31 --file-prefix="zz_generated_" --track2 --go --output-folder=$outputfolder --module-version="0.0.1" >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    npx autorest --version=3.6.2 --use=@autorest/gotest@1.0.0 $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$ResourceProvider/resource-manager/readme.md --use=@autorest/go@4.0.0-preview.31 --file-prefix="zz_generated_" --track2 --go --output-folder=$outputfolder --module-version="0.0.1" >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$OPERATION : $(ResourceProvider)]: Generate go sdk mock test failed"
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
