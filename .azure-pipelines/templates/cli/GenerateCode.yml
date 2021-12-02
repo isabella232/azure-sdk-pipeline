@@ -7,7 +7,7 @@ steps:
     ls -l
     sdktarget=$(TARGET)
 
-    
+
     sudo npm install -g depthcoverage --unsafe-perm=true --allow-root
     sudo npm install -g autorest-autoconfig
     depthcoverage --token=$(PIPELINE_TOKEN) --org=$(PIPELINE_ORG) --repo=$(PIPELINE_REPO) --operation=read --PRNumber=$(System.PullRequest.PullRequestNumber)
@@ -32,7 +32,7 @@ steps:
       # cli-extension
       autorest --version=3.0.6271 --use=autorest-autoconfig@latest ./azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md --resource-file=./$(RESOURCE_MAP_FILE) --package-$(ResourceProvider)
     fi
-    
+
     ls -l $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/
 
     if [ "$?" != "0" ]; then
@@ -48,7 +48,7 @@ steps:
   displayName: 'Generate or update configuration file'
 - bash: |
     mkdir -p $(Pipeline.Workspace)/sdk/sdkvariables
-    
+
     # PACKAGE_NAME=`cat $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.az.md | grep "extensions"| awk -F':' '{print $2}' | tr -d '[[:space:]]'`
     # af="azure-cli/src/azure-cli/azure/cli/command_modules/$PACKAGE_NAME azure-cli/src/azure-cli/requirements*.txt azure-cli/doc/sphinx/azhelpgen/doc_source_map.json azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.az.md"
     # echo "PACKAGE_NAME:$PACKAGE_NAME"
@@ -85,7 +85,7 @@ steps:
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
       # upload error log
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     else

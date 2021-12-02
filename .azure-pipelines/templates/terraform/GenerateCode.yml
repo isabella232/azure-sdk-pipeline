@@ -23,7 +23,7 @@ steps:
     #   echo "$SchemaFILE exists."
     #   cp "$SchemaFILE" $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/schema.json
     # fi
-    
+
     if [ "$?" != "0" ]; then
       echo "failed to generate readme config file"
     else
@@ -36,7 +36,7 @@ steps:
   displayName: 'Generate or update configuration file'
 - bash: |
     mkdir -p $(Pipeline.Workspace)/sdk/sdkvariables
-    
+
     # PACKAGE_NAME=`cat $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md | grep "cli-name"| awk -F':' '{print $2}' | tr -d '[[:space:]]'`
     PACKAGE_NAME=`cat $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md | grep "terraform-output-folder" | sed 's/output-folder: \$(terraform-output-folder)\///g'`
     af="$PACKAGE_NAME"
@@ -46,7 +46,7 @@ steps:
 
     echo "##vso[task.setvariable variable=Artifact]$af"
     echo "$af" > $(Pipeline.Workspace)/sdk/sdkvariables/Artifact
-    
+
   displayName: 'set sdk variable'
 - task: PublishPipelineArtifact@1
   inputs:
@@ -112,7 +112,7 @@ steps:
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
       # upload error log
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     else
