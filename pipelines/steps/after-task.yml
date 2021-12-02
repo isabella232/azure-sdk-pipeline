@@ -12,6 +12,9 @@ parameters:
 
 steps:
   - bash: |
+      if [[ $PRE_TASK_RESULT == "failure" ]]; then
+        echo '##vso[task.setVariable variable=PreTaskResult]failure'
+      fi
       if [[ -z "${TASK_NAME}" ]]; then
         echo "Cannot Find TASK_NAME, exit"
         exit 0
@@ -21,12 +24,13 @@ steps:
       if [ $retVal -ne 0 ]; then
         echo -e "\033[0;31mPublish Log failed"
         curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
+        echo '##vso[task.setVariable variable=PreTaskResult]failure'
         exit 1
       fi
 
     workingDirectory: $(SDK_REPO)
     displayName: Publish Task Log
-    condition: and(contains(variables['TasksToRun'], '${{ parameters.taskName }}'), succeededOrFailed())
+    condition: and(contains(variables['TasksToRun'], '${{ parameters.taskName }}'), ne(variables['PreTaskResult'], 'failure'))
     env:
       TASK_NAME: ${{ parameters.taskName }}
       AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
@@ -35,3 +39,4 @@ steps:
       BUILD_ID: $(Build.BuildId)
       SDK_GENERATION_SERVICE_HOST: $(CodegenApp_Server)
       PIPE_FULL_LOG: "/tmp/pipe.full.log"
+      PRE_TASK_RESULT: $(StepResult)
