@@ -6,7 +6,7 @@ steps:
     which azdev
     az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
     # az vm show --name MyVm --resource-group MyResourceGroup --debug
-    
+
     sdktarget=$(TARGET)
     if [ "$sdktarget" == "clicore" ] || [ "$sdktarget" == "cli" ]; then
       # azdev test $(Package) --live --discover --no-exitfirst -a -k "_swagger_scenario" 1>$(TASK_KEY).log 2>&1
@@ -20,11 +20,11 @@ steps:
       extension_name=$(ResourceProvider)
       azdev test $extension_name --live --discover --no-exitfirst -a -k "_swagger_scenario" 1>$(TASK_KEY).log 2>&1
     fi
-    
+
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: CLI Test failed"
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(Pipeline.Workspace)/s/$(TASK_KEY).log -n log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
     fi

@@ -99,7 +99,7 @@ steps:
         autorest --version=3.0.6271 --use=autorest-autoconfig@latest ./azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md --resource-file=./$(RESOURCE_MAP_FILE) --package-$(ResourceProvider)
       fi
     fi
-    
+
     if [ "$?" != "0" ]; then
       echo "failed to generate readme config file"
     else
@@ -144,7 +144,7 @@ steps:
       echo "failed to generate examples"
       # upload error log
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       # exit 1
     else
       echo "examples generated"
@@ -206,7 +206,7 @@ steps:
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
       # upload error log
       az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      az storage blob upload -c $(STORAGE_ACCOUNT_CONTAINER) -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
       exit 1
     else
       cd $codefolder
