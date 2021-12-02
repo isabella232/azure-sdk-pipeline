@@ -94,7 +94,7 @@ steps:
           exit 1
       fi
     workingDirectory: $(SDK_REPO)
-    condition: and(contains(variables['TasksToRun'], 'generateAndBuild'), ne(variables['StepResult'], 'failure'))
+    condition: and(contains(variables['TasksToRun'], 'generateAndBuild'), ne(variables['PreTaskResult'], 'failure'))
     displayName: GenerateAndBuildTask
     env:
       TASKS_TO_RUN: $(TasksToRun)
@@ -124,7 +124,7 @@ steps:
           exit 1
       fi
     displayName: MockTestTask
-    condition: and(contains(variables['TasksToRun'], 'mockTest'), ne(variables['StepResult'], 'failure'))
+    condition: and(contains(variables['TasksToRun'], 'mockTest'), ne(variables['PreTaskResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
@@ -144,7 +144,7 @@ steps:
           exit 1
       fi
     displayName: LiveTestTask
-    condition: and(contains(variables['TasksToRun'], 'liveTest'), ne(variables['StepResult'], 'failure'))
+    condition: and(contains(variables['TasksToRun'], 'liveTest'), ne(variables['PreTaskResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
