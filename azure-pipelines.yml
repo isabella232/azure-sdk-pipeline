@@ -7,10 +7,6 @@ pool:
 
 variables:
 - template: Variables.yml
-- name: PIPELINE_ORG
-  value: Azure
-- name: PIPELINE_REPO
-  value: depth-coverage-pipeline
 - name: PULL_NUMBER
   value: $(System.PullRequest.PullRequestNumber)
 - name: ResourceProvider
