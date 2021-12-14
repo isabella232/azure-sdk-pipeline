@@ -41,7 +41,7 @@ parameters:
       - devops
 
   - name: specRepoUrl
-    type: string 
+    type: string
 
   - name: specRepoBaseBranch
     type: string
@@ -66,6 +66,7 @@ stages:
   - stage: SdkGeneration
     jobs:
       - job: SdkGeneration
+      - displayName: SdkGeneration-${{ parameters.sdk }}-${{ parameters.resourceProvider }}-${{ parameters.specRepoType }}
         steps:
           - bash: |
               curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
