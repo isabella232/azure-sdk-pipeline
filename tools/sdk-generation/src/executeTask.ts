@@ -14,6 +14,7 @@ import {requireJsonc} from "./utils/requireJsonc";
 
 export async function executeTask(taskName: string,
                                   runScriptOptions: RunOptions,
+                                  cwd: string,
                                   inputJson?: GenerateAndBuildInput | MockTestInput | LiveTestInput
 ): Promise<{ taskResult: TaskResult, output: GenerateAndBuildOutput | MockTestOutput | LiveTestOutput | undefined }> {
     const inputJsonPath  = '/tmp/input.json';
@@ -29,7 +30,7 @@ export async function executeTask(taskName: string,
     }
     args.push(outputJsonPath);
     const result = await runScript(runScriptOptions, {
-        cwd: '/',
+        cwd: cwd,
         args: args
     });
     if (result === 'failed') {
