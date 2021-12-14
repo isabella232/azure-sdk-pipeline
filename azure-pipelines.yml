@@ -66,7 +66,7 @@ stages:
   - stage: SdkGeneration
     jobs:
       - job: SdkGeneration
-      - displayName: SdkGeneration-${{ parameters.sdk }}-${{ parameters.resourceProvider }}-${{ parameters.specRepoType }}
+      - displayName: ${{ parameters.sdk }}
         steps:
           - bash: |
               curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
