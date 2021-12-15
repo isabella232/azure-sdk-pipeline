@@ -82,7 +82,7 @@ stages:
               sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
               sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
 
-          - template: ./pipelines/steps/sdk-generation.yml
+          - template: ./pipelines/steps/sdk-generation-tasks.yml
             parameters:
               sdkGenerationName: ${{ parameters.sdkGenerationName }}
               sdk: ${{ parameters.sdk }}

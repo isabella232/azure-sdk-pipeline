@@ -59,6 +59,7 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: init
+      displayTaskName: Init
 
   - template: generate-and-build-task.yml
     parameters:
@@ -74,6 +75,7 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: generateAndBuild
+      displayTaskName: Generate
 
   - template: mock-test-task.yml
 
@@ -81,6 +83,7 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: mockTest
+      displayTaskName: Mock Test
 
   - template: live-test-task.yml
 
@@ -88,3 +91,4 @@ steps:
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: liveTest
+      displayTaskName: Live Test

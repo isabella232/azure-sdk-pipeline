@@ -6,7 +6,7 @@ steps:
           echo -e "\033[0;31mLiveTest Task is failed"
           exit 1
       fi
-    displayName: LiveTestTask
+    displayName: Live Test
     condition: and(contains(variables['TasksToRun'], 'liveTest'), ne(variables['PreTaskResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:

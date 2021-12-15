@@ -8,7 +8,7 @@ steps:
           echo -e "\033[0;31mMockTest Task is failed"
           exit 1
       fi
-    displayName: MockTestTask
+    displayName: Mock Test
     condition: and(contains(variables['TasksToRun'], 'mockTest'), ne(variables['PreTaskResult'], 'failure'))
     workingDirectory: $(SDK_REPO)
     env:

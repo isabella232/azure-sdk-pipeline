@@ -10,6 +10,14 @@ parameters:
       - mockTest
       - liveTest
 
+  - name: displayTaskName
+    type: string
+    values:
+      - Init
+      - Generate
+      - Mock Test
+      - Live Test
+
 steps:
   - bash: |
       if [[ $PRE_TASK_RESULT == "failure" ]]; then
@@ -29,7 +37,7 @@ steps:
       fi
 
     workingDirectory: $(SDK_REPO)
-    displayName: Publish Task Log
+    displayName: Publish ${{ parameters.displayTaskName }} Log
     condition: and(contains(variables['TasksToRun'], '${{ parameters.taskName }}'), ne(variables['PreTaskResult'], 'failure'))
     env:
       TASK_NAME: ${{ parameters.taskName }}

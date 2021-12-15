@@ -6,7 +6,7 @@ steps:
           echo -e "\033[0;31mInit Task is failed"
           exit 1
       fi
-    displayName: InitTask
+    displayName: Init
     condition: contains(variables['TasksToRun'], 'init')
     workingDirectory: $(SDK_REPO)
     env:
