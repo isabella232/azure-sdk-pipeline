@@ -53,91 +53,36 @@ steps:
       SDK_REPO: $(SDK_REPO)
       SKIPPED_STEPS: ${{ parameters.skippedTask }}
 
-  - bash: |
-      runInitTask
-      retVal=$?
-      if [ $retVal -ne 0 ]; then
-          echo -e "\033[0;31mInit Task is failed"
-          exit 1
-      fi
-    displayName: InitTask
-    condition: contains(variables['TasksToRun'], 'init')
-    workingDirectory: $(SDK_REPO)
-    env:
-      SDK_REPO: $(SDK_REPO)
-      TASKS_TO_RUN: $(TasksToRun)
+  - template: init-task.yml
 
   - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: init
 
-  - bash: |
-      headSha=`git rev-parse HEAD`
-      export HEAD_SHA=${headSha}
-      runGenerateAndBuildTask
-      retVal=$?
-      if [ $retVal -ne 0 ]; then
-          echo -e "\033[0;31mGenerateAndBuild Task is failed"
-          exit 1
-      fi
-    workingDirectory: $(SDK_REPO)
-    condition: and(contains(variables['TasksToRun'], 'generateAndBuild'), ne(variables['PreTaskResult'], 'failure'))
-    displayName: GenerateAndBuildTask
-    env:
-      TASKS_TO_RUN: $(TasksToRun)
-      SDK_REPO: $(SDK_REPO)
-      SPEC_FOLDER: $(SPEC_REPO)
-      RELATED_README_MD_FILE: ${{ parameters.readmeFile }}
-      LANGUAGE: ${{ parameters.sdk }}
-      RESOURCE_PROVIDER: ${{ parameters.resourceProvider }}
-      AZURE_STORAGE_BLOB_SAS_URL: $(AZURE_STORAGE_BLOB_SAS_URL)
-      SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
-      SERVICE_TYPE: ${{ parameters.serviceType }}
-      HEAD_REF: ${{ parameters.sdkRepoBaseBranch }}
-      REPO_HTTP_URL: ${{ parameters.sdkRepoUrl }}
+  - template: generate-and-build.yml
+    parameters:
+      readmeFile: ${{ parameters.readmeFile }}
+      sdk: ${{ parameters.sdk }}
+      resourceProvider: ${{ parameters.resourceProvider }}
+      sdkGenerationName: ${{ parameters.sdkGenerationName }}
+      serviceType: ${{ parameters.serviceType }}
+      sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
+      sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
 
   - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: generateAndBuild
 
-  - bash: |
-      # start mock server
-      # TODO
-      runMockTestTask
-      retVal=$?
-      if [ $retVal -ne 0 ]; then
-          echo -e "\033[0;31mMockTest Task is failed"
-          exit 1
-      fi
-    displayName: MockTestTask
-    condition: and(contains(variables['TasksToRun'], 'mockTest'), ne(variables['PreTaskResult'], 'failure'))
-    workingDirectory: $(SDK_REPO)
-    env:
-      SDK_REPO: $(SDK_REPO)
-      PACKAGE_FOLDERS: $(PackageFolders)
-      TASKS_TO_RUN: $(TasksToRun)
+  - template: mock-test-task.yml
 
   - template: after-task.yml
     parameters:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: mockTest
 
-  - bash: |
-      runLiveTestTask
-      retVal=$?
-      if [ $retVal -ne 0 ]; then
-          echo -e "\033[0;31mLiveTest Task is failed"
-          exit 1
-      fi
-    displayName: LiveTestTask
-    condition: and(contains(variables['TasksToRun'], 'liveTest'), ne(variables['PreTaskResult'], 'failure'))
-    workingDirectory: $(SDK_REPO)
-    env:
-      SDK_REPO: $(SDK_REPO)
-      PACKAGE_FOLDERS: $(PackageFolders)
-      TASKS_TO_RUN: $(TasksToRun)
+  - template: live-test-task.yml
 
   - template: after-task.yml
     parameters:
