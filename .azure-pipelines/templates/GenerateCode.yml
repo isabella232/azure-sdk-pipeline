@@ -22,12 +22,10 @@ steps:
       cd $(Pipeline.Workspace)/s
     displayName: 'create swagger work branch'
 - bash: |
-    set -x
-    # bash ./scripts/bash/$(SDK)/GenerateCode.sh $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs/specification $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    # cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)"`
-    # echo "cmd:$cmd"
-    # $cmd $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs "$(ResourceProvider)" $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-
+      cd $(Pipeline.Workspace)/s
+      git clone --branch $(SDK_REPO_BASE_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+  displayName: 'pull sdk repo'
+- bash: |
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs/specification" "$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)"`
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Not supported SDK"
