@@ -60,7 +60,7 @@ steps:
       sdkGenerationName: ${{ parameters.sdkGenerationName }}
       taskName: init
 
-  - template: generate-and-build.yml
+  - template: generate-and-build-task.yml
     parameters:
       readmeFile: ${{ parameters.readmeFile }}
       sdk: ${{ parameters.sdk }}
