@@ -46,8 +46,8 @@ steps:
           echo -e "\033[0;31mGet tasks to run failed"
           exit 1
       fi
-    displayName: Get Tasks To Run
-    name: getTasksToRun
+    displayName: Retrieve Tasks
+    name: retrieveTasks
     workingDirectory: $(SDK_REPO)
     env:
       SDK_REPO: $(SDK_REPO)
