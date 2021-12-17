@@ -3,7 +3,13 @@ steps:
     set -x
     # bash ./scripts/bash/$(SDK)/Build.sh $(Pipeline.Workspace)/s/azure-sdk-for-go/sdk/$(ResourceProvider)/arm$(ResourceProvider) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
     cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "Build" "$(SDK)"`
-    $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
+    if [ "$?" != "0" ]; then
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Not supported SDK"
+      echo "##vso[task.setvariable variable=Task_Result]failure"
+      exit 1
+    fi
+    set -o pipefail
+    $cmd "$(ResourceProvider)" $(Pipeline.Workspace)/s/$(SDK_REPO_NAME) |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: build code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"

@@ -1,7 +1,7 @@
 steps:
 - template: GenerateCodePR.yml
 - bash: |
-    logurl="https://sdkpipeline.blob.core.windows.net/sdk-pipeline/log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log"
+    logurl="https://$(STORAGE_ACCOUNT).blob.core.windows.net/$(STORAGE_ACCOUNT_CONTAINER)/log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log"
     codePR=$(CODE_PULLREQUEST)
     triggerPR="https://github.com/$(CODEGEN_REPO_OWNER)/$(CODEGEN_REPO_NAME)/pull/$(System.PullRequest.PullRequestNumber)"
     sdktarget=$(TARGET)
@@ -26,11 +26,11 @@ steps:
     fi
 
     resolveURL="https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/onboard/customize?triggerPR=$triggerPR&codePR=$codePR"
-        
+
     python scripts/issueResolve.py "Onboarding" "Please Reolve issues when Onboard '$(ResourceProvider)'" "$logurl" "$codePR" "$triggerPR" "$resolveURL" > scripts/email.html
     # cat scripts/email.html
     to_mail="$(Contactors)"
-        
+
     sudo pip install wheel
     sudo pip install sendgrid
     python scripts/sendGridemail.py "scripts/email.html" $to_mail "Depth-coverage Issue Resolve" $(API_KEY)

@@ -22,16 +22,20 @@ steps:
       cd $(Pipeline.Workspace)/s
     displayName: 'create swagger work branch'
 - bash: |
-    set -x
-    # bash ./scripts/bash/$(SDK)/GenerateCode.sh $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    # cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)"`
-    # echo "cmd:$cmd"
-    # $cmd $(ResourceProvider) $(Pipeline.Workspace)/s/azure-rest-api-specs "$(ResourceProvider)" $(Pipeline.Workspace)/s/azure-sdk-for-go>>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-
-    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs" "$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)"`
+      cd $(Pipeline.Workspace)/s
+      git clone --branch $(SDK_REPO_BASE_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+  displayName: 'pull sdk repo'
+- bash: |
+    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs/specification" "$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)"`
+    if [ "$?" != "0" ]; then
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Not supported SDK"
+      echo "##vso[task.setvariable variable=Task_Result]failure"
+      exit 1
+    fi
     echo "cmd:$cmd"
-    $cmd >>$(Pipeline.Workspace)/s/$(TASK_KEY).log 2>&1
-    
+    set -o pipefail
+    $cmd |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
+
     if [ "$?" != "0" ]; then
       echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
       echo "##vso[task.setvariable variable=Task_Result]failure"
