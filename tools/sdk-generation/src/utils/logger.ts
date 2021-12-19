@@ -1,6 +1,5 @@
 import * as winston from 'winston';
-import {taskResult} from "../lib/taskResult";
-import {MessageLevel} from "@azure/swagger-validation-common/src/types/message";
+import {MessageLevel, taskResult} from "../lib/taskResult";
 import {getTaskBasicConfig, TaskBasicConfig} from "../cliSchema/taskBasicConfig";
 
 function getLogger() {
