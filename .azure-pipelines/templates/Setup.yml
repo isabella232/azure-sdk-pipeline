@@ -73,7 +73,13 @@ stages:
         } elseif ($target -eq "go"){
           $af="$(SDK_REPO_NAME)/sdk/$name/arm$name"
         } elseif ($target -eq "dotnet") {
-          $af="$(SDK_REPO_NAME)/sdk/$name/Azure.ResourceManager.*"
+          $givennamehash=@{ "vmware" = "avs"; "azure-kusto" = "kusto"; "cosmos-db" = "cosmosdb"; "customer-insights" = "customerinsights"; "monitor" = "insights"; "msi" = "managedserviceidentity"; "web" = "appservice"}
+          if($givennamehash.ContainsKey($name)) {
+            $givenname=$givennamehash[$name]
+          } else {
+            $givenname=$name
+          }
+          $af="$(SDK_REPO_NAME)/sdk/$givenname/Azure.ResourceManager.*"
         }
         echo "artifat:$af"
         Write-Host "##vso[task.setvariable variable=Artifcact]$af"
