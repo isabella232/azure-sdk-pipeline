@@ -1,51 +1,36 @@
 steps:
 - template: GenerateCodePR.yml
 - bash: |
-    logurl="https://depthcoverage.blob.core.windows.net/depthcoverage/log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log"
+    logurl="https://$(STORAGE_ACCOUNT).blob.core.windows.net/$(STORAGE_ACCOUNT_CONTAINER)/log/$(CodeGenerationName)-$(Build.BuildId)-$(TASK_KEY).log"
     codePR=$(CODE_PULLREQUEST)
-    triggerPR="https://github.com/${PIPELINE_ORG}/depth-coverage-pipeline/pull/$(System.PullRequest.PullRequestNumber)"
-    # resolveURL="https://$(CodegenApp_Server)/DepthCoverage/Resolve"
+    triggerPR="https://github.com/$(CODEGEN_REPO_OWNER)/$(CODEGEN_REPO_NAME)/pull/$(System.PullRequest.PullRequestNumber)"
     sdktarget=$(TARGET)
-    org=""
-    repo=""
-    base="master"
+
+    org=$(SPEC_REPO_OWNER)
+    repo=$(SPEC_REPO_NAME)
+    base=$(SPEC_REPO_BASE_BRANCH)
+
     sdk="";
     to_mail="";
     cc_mail=$(CCEails);
     if [ "$sdktarget" == "terraform" ]; then
-      org=$(TF_ORG)
-      repo="terraform-provider-azurerm"
-      sdk="terraform"
       to_mail="tfazengvsc@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
     fi
 
     if [ "$sdktarget" == "clicore" ]; then
-      org=$(CLI_ORG)
-      repo="azure-cli"
-      base="dev"
-      sdk="clicore"
       to_mail="AzCLIInternal@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
     fi
 
     if [ "$sdktarget" == "cliextension" ]; then
-      org=$(CLI_ORG)
-      repo="azure-cli-extensions"
-      base="master"
-      sdk="cliextension"
       to_mail="AzCLIInternal@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
     fi
 
-    onboardtype=$(OnboardType)
-    baseAPI="codegenerations"
-    if [ "$onboardtype" == "depth" ]; then
-      baseAPI="depthCoverage"
-    fi
-    resolveURL="https://$(CodegenApp_Server)/$baseAPI/resourceProvider/$(ResourceProvider)/sdk/$sdk/customize?triggerPR=$triggerPR&codePR=$codePR&org=$org"
-        
+    resolveURL="https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName)/onboard/customize?triggerPR=$triggerPR&codePR=$codePR"
+
     python scripts/issueResolve.py "Onboarding" "Please Reolve issues when Onboard '$(ResourceProvider)'" "$logurl" "$codePR" "$triggerPR" "$resolveURL" > scripts/email.html
     # cat scripts/email.html
     to_mail="$(Contactors)"
-        
+
     sudo pip install wheel
     sudo pip install sendgrid
     python scripts/sendGridemail.py "scripts/email.html" $to_mail "Depth-coverage Issue Resolve" $(API_KEY)

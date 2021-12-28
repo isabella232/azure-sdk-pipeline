@@ -1,0 +1,50 @@
+parameters:
+- name: checkout
+  type: boolean
+  default: false
+- name: SDK
+  type: string
+steps:
+- bash: |
+    npm install
+    npm run build
+    ls -l
+  displayName: 'Build pipeline'
+- bash: |
+    set -x
+    export GITHUT_TOKEN=$(PIPELINE_TOKEN)
+    node dist/SetupPipeline.js $(SDK_REPO_OWNER) $(SDK_REPO_NAME) $(SDK_REPO_BASE_BRANCH)
+    ls -l
+  displayName: 'setup pipeline'
+- ${{ if not(parameters.checkout) }}:
+    - bash: |
+        # for workaround
+        git clone --branch $(SDK_REPO_BASE_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+        az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
+        az storage blob download -c $(STORAGE_ACCOUNT_CONTAINER) -f $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -n $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=$(STORAGE_ACCOUNT)
+        tar -xzvf $(CodeGenerationName)-$(Build.BuildId)-generated.tar.gz -C ./
+        ls -l ./
+      displayName: 'download artifact'
+- ${{ else }}:
+    - bash: |
+        git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+      displayName: 'pull repo'
+- ${{ if eq(parameters.SDK, 'go') }}:
+  - task: GoTool@0
+    inputs:
+      version: '1.16.x'
+      goPath: '/home/vsts/work/1/s/go'
+      goBin: '/home/vsts/work/1/s/go/bin'
+- ${{ if eq(parameters.SDK, 'go') }}:
+  - bash: |
+      export GOPATH=/home/vsts/work/1/s/go
+      export GOROOT=/home/vsts/work/1/s/go/bin
+      # go get golang.org/x/tools/cmd/goimports
+      sudo apt install golang-golang-x-tools -y
+    displayName: 'setup Go environment'
+- ${{ if eq(parameters.SDK, 'dotnet') }}:
+  - task: UseDotNet@2
+    inputs:
+      packageType: "runtime"
+      version: "3.x"
+

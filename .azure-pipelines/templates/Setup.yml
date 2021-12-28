@@ -1,10 +1,6 @@
 stages:
 - stage: setup
   jobs:
-  # - job: controlappserver
-  #   steps:
-  #   - script: |
-  #       curl -X GET http://10.172.15.142:3000
   - job: config
     variables:
       TASK_KEY: config
@@ -27,7 +23,7 @@ stages:
         echo $jsonfile
         $data = Get-content $jsonfile | ConvertFrom-Json
         $name=$data.RPName
-        
+
         $readmefile=$data.readmeFile
         $target=$data.target
 
@@ -36,7 +32,7 @@ stages:
         echo "excludeStages:$excludeStages"
 
         echo "target: $target"
-        
+
         $tag=$data.tag;
         echo "tag:$tag"
 
@@ -121,7 +117,7 @@ stages:
         echo "$(Package)" > $(Pipeline.Workspace)/variables/Package
         echo "$(WORKBRANCH)" > $(Pipeline.Workspace)/variables/Workbranch
         echo "$(ignore)" > $(Pipeline.Workspace)/variables/ignore
-        
+
         echo ""
         ls -l $(Pipeline.Workspace)/variables
       displayName: "publish variable"
