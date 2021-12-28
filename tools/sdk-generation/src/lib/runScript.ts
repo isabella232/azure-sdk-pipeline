@@ -54,8 +54,8 @@ export async function runScript(runOptions: RunOptions, options: {
         code: null,
         signal: null
     };
-    if (fs.existsSync(scriptPath)) {
-        fs.chmodSync(scriptPath, '777');
+    if (fs.existsSync(path.join(options.cwd, scriptPath))) {
+        fs.chmodSync(path.join(options.cwd, scriptPath), '777');
     }
 
     try {
