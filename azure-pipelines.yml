@@ -1,273 +1,104 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-pool:
-  vmImage: 'Ubuntu 20.04'
+trigger: none
 
-variables:
-- template: Variables.yml
-- name: PIPELINE_ORG
-  value: Azure
-- name: PIPELINE_REPO
-  value: depth-coverage-pipeline
-- name: PULL_NUMBER
-  value: $(System.PullRequest.PullRequestNumber)
-- name: ResourceProvider
-  value: empty
-- name: Resource
-  value: ""
-- name: ResourceMapJson
-  value: ""
-- name: RESOURCE_MAP_FILE
-  value: ToGenerate.json
-- name: README_FILE
-  value: ""
-- name: TARGET
-  value: clicore
-- name: OnboardType
-  value: depth
-- name: AlertInstruction
-  value: ""
-- name: NotifyUsers
-  value: ""
-- name: Artifcact
-  value: ""
-- name: CODE_PULLREQUEST
-  value: ""
-- name: Task_Result
-  value: "success"
+parameters:
+  - name: sdkGenerationName
+    type: string
+
+  - name: sdk
+    type: string
+    values:
+      - js
+      - java
+      - go
+      - net
+      - python
+
+  - name: resourceProvider
+    type: string
+
+  - name: readmeFile
+    type: string
+
+  - name: triggerType
+    type: string
+    default: ad-hoc
+    values:
+      - ad-hoc
+      - ci
+      - release
+
+  - name: serviceType
+    type: string
+    values:
+      - resource-manager
+      - data-plane
+
+  - name: specRepoType
+    type: string
+    default: github
+    values:
+      - github
+      - devops
+
+  - name: specRepoUrl
+    type: string
+
+  - name: specRepoBaseBranch
+    type: string
+
+  - name: sdkRepoType
+    type: string
+    default: github
+    values:
+      - github
+      - devops
+
+  - name: sdkRepoUrl
+    type: string
+
+  - name: sdkRepoBaseBranch
+    type: string
+
+  - name: skippedTask
+    type: string
+
 stages:
-- template: .azure-pipelines/templates/Setup.yml
-- stage: GenerateCode
-  dependsOn: setup
-  condition: succeeded()
-  jobs:
-  - job: GenerateJob
-    variables:
-      TASK_KEY: GenerateCode
-      Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-    steps:
-    - template: .azure-pipelines/templates/VariableSetTask.yml
-    - template: .azure-pipelines/templates/${{variables.SDK}}/GenerateCode.yml
-    # - bash: |
-    #     sdktarget=$(TARGET)
-    #     if [ "$sdktarget" == "terraform" ]; then
-    #       echo "##vso[task.setvariable variable=tobuild;isOutput=true]Yes"
-    #     else
-    #       echo "##vso[task.setvariable variable=tobuild;isOutput=true]No"
-    #     fi
-    #   displayName: "set output variable"
-    #   name: DetermineResult
-    # - bash: |
-    #     set -x
-    #     npm install publish-sdkcodgen-pipeline-result
-    #     pwd
-    #     ls -l
-    #     ls -l /home/vsts/work
-    #     node /home/vsts/work/node_modules/publish-sdkcodgen-pipeline-result/dist/sdk-code-generate.js
-    #   displayName: "upload pipeline result"
-    - template: .azure-pipelines/templates/UploadCode.yml
-    - template: .azure-pipelines/templates/AfterTask.yml
-  - job: CodeGenerationFailureAlert
-    condition: failed()
-    variables:
-      TASK_KEY: CodeGenerationnFailureAlert
-      Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-    steps:
-    - template: .azure-pipelines/templates/VariableSetTask.yml
-    - template: .azure-pipelines/templates/IssueAlertTask.yml
-- ${{ if contains(variables['stages'],'Build') }}:
-  - stage: Build
-    dependsOn: GenerateCode
-    # condition: and(succeeded(), eq(stageDependencies.GenerateCode.outputs['GenerateJob.DetermineResult.tobuild'], 'Yes'))
+  - stage: SdkGeneration
     jobs:
-    - job: build
-      variables:
-        TASK_KEY: Build
-        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-      steps:
-      - template: .azure-pipelines/templates/BeforeTask.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/Build.yml
-      - template: .azure-pipelines/templates/AfterTask.yml
-    - job: BuildFailureAlert
-      dependsOn: build
-      condition: failed()
-      variables:
-        TASK_KEY: BuildFailureAlert
-        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-      steps:
-      - template: .azure-pipelines/templates/VariableSetTask.yml
-      - template: .azure-pipelines/templates/GenerateCodePR.yml
-      - template: .azure-pipelines/templates/IssueAlertTask.yml
-- ${{ if contains(variables['stages'],'MockTest') }}:
-  - stage: MockTest
-    dependsOn:
-    - setup
-    - GenerateCode
-    - ${{ if contains(variables['stages'],'Build') }}:
-      - Build
-    condition: and (not(contains(stageDependencies.setup.outputs['config.configResource.excludestages'], 'MockTest')), succeeded())
-    jobs:
-    - job: MockTestJob
-      variables:
-        TASK_KEY: MockTest
-        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-      steps:
-      - template: .azure-pipelines/templates/BeforeTask.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupMockServerEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/RunMockTest.yml
-      - template: .azure-pipelines/templates/AfterTask.yml
-      displayName: MockTest
-    - job: MockTestFailureAlert
-      variables:
-        TASK_KEY: MockTestFailureAlert
-        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-      dependsOn:
-      - MockTestJob
-      condition: failed('MockTestJob')
-      steps:
-      - template: .azure-pipelines/templates/VariableSetTask.yml
-      - template: .azure-pipelines/templates/GenerateCodePR.yml
-      - template: .azure-pipelines/templates/IssueAlertTask.yml
-- ${{ if contains(variables['stages'],'LiveTest') }}:
-  - stage: LiveTest
-    dependsOn:
-    - setup
-    - MockTest
-    condition: and(not(contains(stageDependencies.setup.outputs['config.configResource.excludestages'], 'LiveTest')), or(succeeded('MockTest'), contains(stageDependencies.setup.outputs['config.configResource.ignore'], 'TestFailure')))
-    jobs:
-    - job: LiveTestJob
-      variables:
-        TASK_KEY: LiveTest
-      steps:
-      - script: echo 'CLILiveTest'
-      - template: .azure-pipelines/templates/BeforeTask.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/SetupTestEnv.yml
-      - template: .azure-pipelines/templates/${{variables.SDK}}/RunLiveTest.yml
-      - template: .azure-pipelines/templates/AfterTask.yml
-      displayName: LiveTest
-    - job: LiveTestFailureAlert
-      variables:
-        TASK_KEY: LiveTestFailureAlert
-        Contactors: "sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-      dependsOn:
-      - LiveTestJob
-      condition: failed('LiveTestJob')
-      steps:
-      - template: .azure-pipelines/templates/VariableSetTask.yml
-      - template: .azure-pipelines/templates/GenerateCodePR.yml
-      - template: .azure-pipelines/templates/IssueAlertTask.yml
-- ${{ if contains(variables['stages'],'Submit') }}:
-  - stage: Submit
-    condition: or(succeeded(), contains('${{ variables.ignore }}', 'TestFailure'))
-    jobs:
-    - job: submitJob
-      variables:
-        TASK_KEY: Submit
-      steps:
-      - template: .azure-pipelines/templates/BeforeTask.yml
-      - bash: |
-          echo $(Pipeline.Workspace)
-          pwd
+      - job: SdkGeneration
+        displayName: ${{ parameters.sdkGenerationName }}-${{ parameters.sdk }}-${{ parameters.serviceType }}-${{ parameters.resourceProvider }}
+        steps:
+          - bash: |
+              curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
+            displayName: Notify Sdk Generation Server to Start
+            env:
+              SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
 
-          echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-          sdktarget=$(TARGET)
-          if [ "$sdktarget" == "terraform" ]; then
-            git clone --branch $(OnboardType)-$(TARGET)-$(ResourceProvider) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(TF_ORG)/terraform-provider-azurerm.git
-            cd ./terraform-provider-azurerm
-          fi
+          - template: ./pipelines/steps/environment-setup.yml
+            parameters:
+              sdk: ${{ parameters.sdk }}
+              specRepoUrl: ${{ parameters.specRepoUrl }}
+              specRepoBaseBranch: ${{ parameters.specRepoBaseBranch }}
+              sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
+              sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
 
-          if [ "$sdktarget" == "clicore" ] || [ "$sdktarget" == "cliextension" ]; then
-            git clone --branch $(OnboardType)-$(TARGET)-$(ResourceProvider) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(CLI_ORG)/azure-cli
-            cd ./azure-cli
-          fi
-
-          git config credential.helper store; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
-          git branch; git add -A; git commit -m "autogenerated"; git push origin $(OnboardType)-$(TARGET)-$(ResourceProvider);
-        displayName: 'Generate pull request'
-    - job: confirm
-      dependsOn: submitJob
-      condition: succeeded()
-      displayName: confirm submit or customize
-      steps:
-      - template: .azure-pipelines/templates/VariableSetTask.yml
-      - template: .azure-pipelines/templates/GenerateCodePR.yml
-      - bash: |
-          cd $(Pipeline.Workspace)/s
-          codePR=$(CODE_PULLREQUEST)
-
-          sdktarget=$(TARGET)
-
-          org=""
-          repo=""
-          base="master"
-          sdk="";
-          if [ "$sdktarget" == "terraform" ]; then
-            org=$(TF_ORG)
-            repo="terraform-provider-azurerm"
-            sdk="terraform"
-            base="pipeline"
-          fi
-
-          if [ "$sdktarget" == "clicore" ]; then
-            org=$(CLI_ORG)
-            repo="azure-cli"
-            base="dev"
-            sdk="clicore"
-          fi
-
-          if [ "$sdktarget" == "cliextension" ]; then
-            org=$(CLI_ORG)
-            repo="azure-cli-extensions"
-            base="master"
-            sdk="cliextension"
-          fi
-
-          onboardtype=$(OnboardType)
-          baseAPI="codegenerations"
-          if [ "$onboardtype" == "depth" ]; then
-            baseAPI="depthCoverage"
-          fi
-
-          triggerPR="https://github.com/Azure/depth-coverage-pipeline/pull/$(System.PullRequest.PullRequestNumber)"
-          submitURL="https://$(CodegenApp_Server)/$baseAPI/$(CodeGenerationName)/onboard"
-          customizeURL="https://$(CodegenApp_Server)/$baseAPI/resourceProvider/$(ResourceProvider)/sdk/$sdk/customize?triggerPR=$triggerPR&codePR=$codePR&org=$org"
-          
-
-          
-          python scripts/onboard.py "Onboarding" "$(TARGET) Onboarding $(ResourceProvider) confirm" "$codePR" "$triggerPR" "$submitURL" "$customizeURL" > scripts/email.html
-          echo "start of email"
-          cat scripts/email.html
-          echo "end of email"
-          # to_mail="sdkautomationpipeline@outlook.com"
-          if [ "$sdktarget" == "terraform" ]; then
-            to_mail="tfazengvsc@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-          else
-            to_mail="AzCLIInternal@microsoft.com;sdkautomationpipeline@outlook.com;vsccodegen@microsoft.com"
-          fi
-          plateform=$(PLATEFORM)
-          echo "plateform: $plateform"
-          if [ "$plateform" == "dev" ]; then
-            to_mail="sdkautomationpipeline@outlook.com"
-          fi
-          
-          echo "to_mail: $to_mail"
-          echo "cc_mail: $cc_mail"
-
-          sudo pip install wheel
-          sudo pip install sendgrid
-          python scripts/sendGridemail.py "scripts/email.html" $to_mail "Depth-coverage Onboarding Confirm" $(API_KEY)
-          echo "end of send email"
-
-          codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "pipelineCompleted"}}')
-        displayName: "send confirm email"
-- stage: Result
-  jobs:
-  - job: publishResult
-    condition: always()
-    steps:
-    - bash: |
-        codePR=$(curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/$(CodeGenerationName) -d '{"updateParameters": {"status": "completed"}}')
-      displayName: 'set complete'
+          - template: ./pipelines/steps/sdk-generation-tasks.yml
+            parameters:
+              sdkGenerationName: ${{ parameters.sdkGenerationName }}
+              sdk: ${{ parameters.sdk }}
+              resourceProvider: ${{ parameters.resourceProvider }}
+              readmeFile: ${{ parameters.readmeFile }}
+              triggerType: ${{ parameters.triggerType }}
+              specRepoType: ${{ parameters.specRepoType }}
+              specRepoUrl: ${{ parameters.specRepoUrl }}
+              specRepoBaseBranch: ${{ parameters.specRepoBaseBranch }}
+              sdkRepoType: ${{ parameters.sdkRepoType }}
+              sdkRepoUrl: ${{ parameters.sdkRepoUrl }}
+              sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
+              skippedTask: ${{ parameters.skippedTask }}
+              serviceType: ${{ parameters.serviceType }}
+          - bash: |
+              curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
+            displayName: Set Complete
+            env:
+              SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}

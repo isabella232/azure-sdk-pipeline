@@ -1,0 +1,41 @@
+parameters:
+  - name: sdk
+    type: string
+
+  - name: specRepoUrl
+    type: string
+
+  - name: specRepoBaseBranch
+    type: string
+
+  - name: sdkRepoUrl
+    type: string
+
+  - name: sdkRepoBaseBranch
+    type: string
+
+steps:
+  - task: NodeTool@0
+    displayName: Specify Node Version
+    inputs:
+      versionSpec: 14.x
+
+  - bash: |
+      npm install
+      npm run build
+      npm pack
+      PACKAGE_TGZ=`ls sdk-generation-lib-*.tgz`
+      npm install -g ${PACKAGE_TGZ}
+      npm install -g autorest
+    displayName: Setup Pipeline Runtime Environment
+    workingDirectory: tools/sdk-generation
+
+  - bash: |
+      git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
+      git clone --branch ${{ parameters.sdkRepoBaseBranch }} ${{ parameters.sdkRepoUrl }}
+      getRepoName SPEC_REPO ${{ parameters.specRepoUrl }}
+      getRepoName SDK_REPO ${{ parameters.sdkRepoUrl }}
+    displayName: Clone Spec Repo and Sdk Repo
+    workingDirectory: ../
+
+

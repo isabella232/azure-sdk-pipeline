@@ -1,7 +1,0 @@
-jobs:
-- job: AlertIssue
-  steps:
-  - template: VariableSetTask.yml
-  - template: GenerateCodePR.yml
-  - template: IssueAlertTask.yml
-  condition: failed()

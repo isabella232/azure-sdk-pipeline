@@ -1,217 +1,44 @@
 steps:
-- script: |
-    # pull sdk repo
-    echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-    sdktarget=$(TARGET)
-    repo=""
-    base=""
-    if [ "$sdktarget" == "terraform" ]; then
-      cd $(Pipeline.Workspace)/s
-      git clone --branch $(TF_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(TF_ORG)/terraform-provider-azurerm.git
-      repo="terraform-provider-azurerm"
-      base="pipeline"
-    fi
-
-    if [ "$sdktarget" == "clicore" ]; then
-      cd $(Pipeline.Workspace)/s
-      git clone --branch $(CLI_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(CLI_ORG)/azure-cli
-      repo="azure-cli"
-      base="dev"
-    fi
-
-    if [ "$sdktarget" == "cliextension" ]; then
-      cd $(Pipeline.Workspace)/s
-      git clone --branch $(CLI_EXTENSION_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(CLI_ORG)/azure-cli-extensions
-      repo="azure-cli-extensions"
-      base="master"
-    fi
-
-    cd $(Pipeline.Workspace)/s/$repo
-    tf_existed_in_remote=$(git ls-remote --heads origin $(OnboardType)-$(TARGET)-$(ResourceProvider))
-    if [[ -z ${tf_existed_in_remote} ]]; then
-      git checkout -b $(OnboardType)-$(TARGET)-$(ResourceProvider)
-    else
-      git checkout $(OnboardType)-$(TARGET)-$(ResourceProvider)
-      # git reset --hard origin/$(OnboardType)-$(TARGET)-$(ResourceProvider)
-      # git reset --hard origin/$base
-    fi
-
+- bash: |
     #pull swagger repo
     cd $(Pipeline.Workspace)/s
-    git clone --branch $(Swagger_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com/$(Swagger_ORG)/azure-rest-api-specs.git
+    git clone --branch $(SPEC_REPO_BASE_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SPEC_REPO_URL)
     ls -l
 
     # upload to azure-rest-api-specs branch
-    cd $(Pipeline.Workspace)/s/azure-rest-api-specs
-    spec_existed_in_remote=$(git ls-remote --heads origin $(OnboardType)-$(TARGET)-$(ResourceProvider))
-    if [[ -z ${spec_existed_in_remote} ]]; then
-      git checkout -b $(OnboardType)-$(TARGET)-$(ResourceProvider)
-    else
-      git checkout $(OnboardType)-$(TARGET)-$(ResourceProvider)
-      # git reset --hard origin/master
-    fi
-    git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
-    git pull origin $(OnboardType)-$(TARGET)-$(ResourceProvider)
-    cd $(Pipeline.Workspace)/s
-  displayName: 'pull repo'
-- script: |
-    sudo npm install -g autorest@latest && sudo npm install -g typescript
-  displayName: 'install autorest'
-- bash: |
-    echo "$README_FILE"
-    pwd
-    ls -l
-    sdktarget=$(TARGET)
-    if [ "$sdktarget" == "terraform" ]; then
-      echo 'workOnTF'
-      # sudo npm install -g metadata-tool@3.0.5
-      sudo npm install -g metadata-tool
-      FILE=$(Pipeline.Workspace)/s/specification/$(ResourceProvider)/resource-manager/readme.terraform.md
-      if [ -f "$FILE" ]; then
-        echo "$FILE exists."
-        cp "$FILE" $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md
-      fi
-      metadata-tool ./azure-rest-api-specs/$(README_FILE)
-      ls -l
-      SchemaFILE=$(Pipeline.Workspace)/s/specification/$(ResourceProvider)/resource-manager/schema.json
-      if [ -f "$SchemaFILE" ]; then
-        echo "$SchemaFILE exists."
-        cp "$SchemaFILE" $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/schema.json
-      fi
-    fi
-
-    if [ "$sdktarget" == "clicore" ] || [ "$sdktarget" == "cliextension" ]; then
-      echo 'workonCLI'
-      sudo npm install -g depthcoverage --unsafe-perm=true --allow-root
-      sudo npm install -g autorest-autoconfig
-      depthcoverage --token=$(PIPELINE_TOKEN) --org=$(PIPELINE_ORG) --repo=$(PIPELINE_REPO) --operation=read --PRNumber=$(System.PullRequest.PullRequestNumber)
-      ls -l
-      FILE=$(Pipeline.Workspace)/s/specification/$(ResourceProvider)/resource-manager/readme.az.md
-      if [ -f "$FILE" ]; then
-        echo "$FILE exists."
-        cp "$FILE" $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.az.md
-      fi
-
-      if [ "$sdktarget" == "clicore" ]; then
-       autorest --version=3.0.6271 --use=autorest-autoconfig@latest --target-mode=core ./azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md --resource-file=./$(RESOURCE_MAP_FILE)
+  displayName: 'pull swagger repo'
+- ${{ if eq(variables.CHECK_OUT, 'true') }}:
+  - bash: |
+      cd $(Pipeline.Workspace)/s/$(SPEC_REPO_NAME)
+      spec_existed_in_remote=$(git ls-remote --heads origin $(WORKBRANCH))
+      if [[ -z ${spec_existed_in_remote} ]]; then
+        git checkout -b $(WORKBRANCH)
       else
-        # cli-extension
-        autorest --version=3.0.6271 --use=autorest-autoconfig@latest ./azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.md --resource-file=./$(RESOURCE_MAP_FILE) --package-$(ResourceProvider)
+        git checkout $(WORKBRANCH)
+        # git reset --hard origin/$(SPEC_REPO_BASE_BRANCH)
       fi
-    fi
-    
-    if [ "$?" != "0" ]; then
-      echo "failed to generate readme config file"
-    else
-      echo "readme config file generated"
-      cd ./azure-rest-api-specs
-      echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-      git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
-      git branch; git pull origin $(OnboardType)-$(TARGET)-$(ResourceProvider); git add -A; git commit -m "autogenerated"; git push origin $(OnboardType)-$(TARGET)-$(ResourceProvider);
-    fi
-  displayName: 'Generate or update configuration file'
+      git config credential.helper store ; git config --global user.email "chunyu@microsoft.com";git config --global user.name "$(PIPELINE_USER);"
+      git pull origin $(WORKBRANCH)
+      cd $(Pipeline.Workspace)/s
+    displayName: 'create swagger work branch'
 - bash: |
-    mkdir -p $(Pipeline.Workspace)/sdk/sdkvariables
-    sdktarget=$(TARGET)
-    if [ "$sdktarget" == "terraform" ]; then
-      # PACKAGE_NAME=`cat $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md | grep "cli-name"| awk -F':' '{print $2}' | tr -d '[[:space:]]'`
-      PACKAGE_NAME=`cat $(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/readme.terraform.md | grep "terraform-output-folder" | sed 's/output-folder: \$(terraform-output-folder)\///g'`
-      af="generated/$PACKAGE_NAME"
-      echo "PACKAGE_NAME:$PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=Package]$PACKAGE_NAME"
-      echo "$PACKAGE_NAME" > $(Pipeline.Workspace)/sdk/sdkvariables/Package
-
-      echo "##vso[task.setvariable variable=Artifact]$af"
-      echo "$af" > $(Pipeline.Workspace)/sdk/sdkvariables/Artifact
-    fi
-  displayName: 'set sdk variable'
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Pipeline.Workspace)/sdk'
-    artifact: 'sdkvariables'
-    publishLocation: 'pipeline'
+      cd $(Pipeline.Workspace)/s
+      git clone --branch $(SDK_REPO_BASE_BRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
+  displayName: 'pull sdk repo'
 - bash: |
-    sudo npm install -g oav@2.4.0 --unsafe-perm=true --allow-root
-    sudo npm install -g depthcoverage --unsafe-perm=true --allow-root
-    depthcoverage --token=$(PIPELINE_TOKEN) --org=$(PIPELINE_ORG) --repo=$(PIPELINE_REPO) --operation=read --PRNumber=$(System.PullRequest.PullRequestNumber)
-
-    # example genertion command: oav generate-examples [PATH]
-    # for i in $(jq -c .jsonFilelist[] $(RESOURCE_MAP_FILE) | sed -e 's/^"//' -e 's/"$//'); do oav generate-examples $(Pipeline.Workspace)/s/azure-rest-api-specs$i;done
-    bash ./scripts/bash/generateExample.sh $(RESOURCE_MAP_FILE) $(Pipeline.Workspace) 1>generateExample.log 2>&1
-
-    # submit Generated example
+    cmd=`node dist/TaskEngine.js "$(CODEGEN_TO_SDK_CONFIG)" "GenerateCode" "$(SDK)" "$(ResourceProvider)" "$(Pipeline.Workspace)/s/azure-rest-api-specs/specification" "$(Pipeline.Workspace)/s/$(SDK_REPO_NAME)"`
     if [ "$?" != "0" ]; then
-      echo "failed to generate examples"
-      # upload error log
-      az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
-      # exit 1
-    else
-      echo "examples generated"
-      cd $(Pipeline.Workspace)/s/azure-rest-api-specs
-      echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-      git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
-      git branch; git pull origin depth-$(TARGET)-$(ResourceProvider); git add -A; git commit -m "autogenerated"; git push origin depth-$(TARGET)-$(ResourceProvider);
-    fi
-  displayName: 'Generate Example'
-- bash: |
-    set -x
-    echo $pwd
-    sdktarget=$(TARGET)
-    codefolder="";
-    if [ "$sdktarget" == "terraform" ]; then
-      echo "start generate tf code"
-      codefolder="./terraform-provider-azurerm"
-      mkdir generated
-      echo "TAG:$(TAG)"
-      echo "resources:$(RESOURCES)"
-      tag=$(TAG)
-      resources=$(RESOURCES)
-      schemafilepath=""
-      if [ -f "$(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/schema.json" ]; then
-        schemafilepath="$(Pipeline.Workspace)/s/azure-rest-api-specs/specification/$(ResourceProvider)/resource-manager/schema.json"
-      fi
-
-      set -- autorest --version=3.0.6369 --terraform --use=https://terraformcodegen.blob.core.windows.net/terraformcodegen/autorest-terraform-preview.tgz
-      if [ "$tag" !== "" ]; then
-        set -- "$@" --tag=$(TAG)
-      fi
-
-      if [ "$schemafilepath" !== "" ]; then
-        set -- "$@" --schema-file-path="$schemafilepath"
-      fi
-
-      if [ "$resources" !== "" ]; then
-        set -- "$@" --resources=$(RESOURCES)
-      fi
-
-      set -- "$@" --generate-extra-acctest=true --terraform-output-folder=./generated ./azure-rest-api-specs/$(README_FILE) 1>$(TASK_KEY).log 2>&1
-
-      "$@"
-    fi
-
-    if [ "$sdktarget" == "clicore" ]; then
-      echo "start to generate cli core code"
-      codefolder="./azure-cli"
-      autorest --version=3.0.6271 --az --use=https://trenton.blob.core.windows.net/trenton/autorest-az-1.7.3.tgz ./azure-rest-api-specs/$(README_FILE) --azure-cli-folder=./azure-cli --target-mode=core --gen-cmdlet-test 1>$(TASK_KEY).log 2>&1
-    fi
-
-    if [ "$sdktarget" == "cliextension" ]; then
-      echo "start to generate cli extension code"
-      codefolder="./azure-cli-extensions"
-      autorest --version=3.0.6271 --az --use=https://trenton.blob.core.windows.net/trenton/autorest-az-1.7.3.tgz ./azure-rest-api-specs/$(README_FILE) --azure-cli-extension-folder=./azure-cli-extensions --gen-cmdlet-test 1>$(TASK_KEY).log 2>&1
-    fi
-
-    if [ "$?" != "0" ]; then
-      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Generate code failed"
-      # upload error log
-      az login --service-principal -u $(SERVICE_PRINCIPE_ID) -p $(SERVICE_PRINCIPE_SECRET) --tenant $(SERVICE_PRINCIPE_TENANT)
-      az storage blob upload -c sdk-pipeline -f $(TASK_KEY).log -n log/$(TARGET)-$(ResourceProvider)-$(Build.BuildId)-$(TASK_KEY).log --subscription $(SERVICE_PRINCIPE_SUBSCRIPTION) --account-name=sdkpipeline
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: Not supported SDK"
+      echo "##vso[task.setvariable variable=Task_Result]failure"
       exit 1
-    else
-      cd $codefolder
-      echo "https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@github.com" > ~/.git-credentials
-      git config credential.helper store ; git config --global user.email "sdkautomationpipeline@outlook.com";git config --global user.name "AzureSDKPipelineBot;"
-      git branch; git pull origin $(OnboardType)-$(TARGET)-$(ResourceProvider); git add -A; git commit -m "autogenerated"; git push origin $(OnboardType)-$(TARGET)-$(ResourceProvider);
+    fi
+    echo "cmd:$cmd"
+    set -o pipefail
+    $cmd |& tee -a $(Pipeline.Workspace)/s/$(TASK_KEY).log
+
+    if [ "$?" != "0" ]; then
+      echo -e "\e[31m[$(date -u)] ERROR: [$(ResourceProvider)]: generate code failed"
+      echo "##vso[task.setvariable variable=Task_Result]failure"
+      exit 1
     fi
   displayName: 'Generate code'
