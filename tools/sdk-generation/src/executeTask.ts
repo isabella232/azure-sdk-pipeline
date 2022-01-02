@@ -10,13 +10,14 @@ import * as fs from "fs";
 import {runScript} from "./lib/runScript";
 import {RunOptions} from "./types/CodegenToSdkConfig";
 import {requireJsonc} from "./utils/requireJsonc";
+import { InitOutput } from "./types/InitOutput";
 
 
 export async function executeTask(taskName: string,
                                   runScriptOptions: RunOptions,
                                   cwd: string,
                                   inputJson?: GenerateAndBuildInput | MockTestInput | LiveTestInput
-): Promise<{ taskResult: TaskResult, output: GenerateAndBuildOutput | MockTestOutput | LiveTestOutput | undefined }> {
+): Promise<{ taskResult: TaskResult, output: InitOutput | GenerateAndBuildOutput | MockTestOutput | LiveTestOutput | undefined }> {
     const inputJsonPath  = '/tmp/input.json';
     const outputJsonPath = '/tmp/output.json';
     if (!!inputJson) {
