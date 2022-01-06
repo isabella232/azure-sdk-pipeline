@@ -1,20 +1,18 @@
-# todo use variable group to better organize...
 variables:
-  CodeGenerationName: "[[CodeGenerationName]]"
-  SDK: "[[targetSDK]]"
-  stages: "[[stages]]"
-  SPEC_REPO_TYPE: "[[SPEC_REPO_TYPE]]"
-  SPEC_REPO_URL: "[[SPEC_REPO_URL]]"
-  SPEC_REPO_BASE_BRANCH: "[[SPEC_REPO_BASE_BRANCH]]"
-  SPEC_REPO_OWNER: "[[SpecRepoOwner]]"
-  SPEC_REPO_NAME: "[[SpecRepoName]]"
-  SDK_REPO_TYPE: "[[SDK_REPO_TYPE]]"
-  SDK_REPO_URL: "[[SDK_REPO_URL]]"
-  SDK_REPO_BASE_BRANCH: "[[SDK_REPO_BASE_BRANCH]]"
-  SDK_REPO_OWNER: "[[sdkRepoOwner]]"
-  SDK_REPO_NAME: "[[sdkRepoName]]"
-  CODEGEN_REPO_TYPE: "[[CODEGEN_REPO_TYPE]]"
-  CODEGEN_REPO_URL: "[[CODEGEN_REPO_URL]]"
-  CODEGEN_REPO_BASE_BRANCH: "[[CODEGEN_REPO_BASE_BRANCH]]"
-  CODEGEN_REPO_OWNER: "[[codegenRepoOwner]]"
-  CODEGEN_REPO_NAME: "[[codegenRepoName]]"
+  CodeGenerationName: desktopVirtualizationTest20210712
+  SDK: dotnet
+  SERVICE_TYPE: resource-manager
+  stages: Setup;GenerateCode;Build;MockTest;LiveTest
+  SPEC_REPO_TYPE: github
+  SPEC_REPO_URL: github.com/Azure/azure-rest-api-specs
+  SPEC_REPO_BASE_BRANCH: main
+  SPEC_REPO_OWNER: Azure
+  SPEC_REPO_NAME: azure-rest-api-specs
+  SDK_REPO_TYPE: github
+  SDK_REPO_URL: github.com/azure/azure-sdk-for-net
+  SDK_REPO_BASE_BRANCH: main
+  SDK_REPO_OWNER: azure
+  SDK_REPO_NAME: azure-sdk-for-net
+  README_FILE_GITHUB_URL_WITH_COMMIT: >-
+    https://github.com/Azure/azure-rest-api-specs/blob/bb66ab1b8f9f567b714a5143985a410beba07064/specification/desktopvirtualization/resource-manager/readme.md
+  CHECK_OUT: false

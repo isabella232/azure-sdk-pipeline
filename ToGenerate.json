@@ -1,0 +1,25 @@
+{
+  "serviceType": "resource-manager",
+  "resources": [],
+  "resourcelist": "",
+  "onboardType": "ad-hoc",
+  "swaggerRepo": {
+    "type": "github",
+    "path": "https://github.com/Azure/azure-rest-api-specs",
+    "branch": "main"
+  },
+  "sdkRepo": {
+    "type": "github",
+    "path": "https://github.com/azure/azure-sdk-for-net",
+    "branch": "main"
+  },
+  "codegenRepo": {
+    "type": "github",
+    "path": "https://github.com/Azure/azure-sdk-pipeline",
+    "branch": "dev"
+  },
+  "jsonFileList": [],
+  "RPName": "desktopvirtualization",
+  "readmeFile": "/specification/desktopvirtualization/resource-manager/readme.md",
+  "target": "dotnet"
+}
