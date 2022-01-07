@@ -46,7 +46,7 @@ export async function runScript(runOptions: RunOptions, options: {
 }): Promise<string> {
     let executeResult: scriptRunningState;
     const scriptCmd = runOptions.script;
-    const scriptPath = runOptions.path;
+    const scriptPath = runOptions.path.trim();
     const env = {PWD: path.resolve(options.cwd), ...process.env};
     for (const e of runOptions.envs) {
         env[e] = process.env[e];
