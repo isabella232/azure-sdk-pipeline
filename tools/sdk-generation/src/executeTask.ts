@@ -10,7 +10,7 @@ import * as fs from "fs";
 import {runScript} from "./lib/runScript";
 import {RunOptions} from "./types/CodegenToSdkConfig";
 import {requireJsonc} from "./utils/requireJsonc";
-import { InitOutput } from ".";
+import { InitOutput } from "./types/InitOutput";
 
 
 export async function executeTask(taskName: string,

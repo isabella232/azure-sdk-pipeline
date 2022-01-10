@@ -45,7 +45,8 @@ export async function runScript(runOptions: RunOptions, options: {
     args?: string[];
 }): Promise<string> {
     let executeResult: scriptRunningState;
-    const scriptPath = runOptions.path;
+    const scriptCmd = runOptions.script;
+    const scriptPath = runOptions.path.trim();
     const env = {PWD: path.resolve(options.cwd), ...process.env};
     for (const e of runOptions.envs) {
         env[e] = process.env[e];
@@ -54,12 +55,25 @@ export async function runScript(runOptions: RunOptions, options: {
         code: null,
         signal: null
     };
+    logger.log('cmdout', "task script path:" + path.join(options.cwd, scriptPath) );
     if (fs.existsSync(path.join(options.cwd, scriptPath))) {
+        logger.log('cmdout', "chmod");
         fs.chmodSync(path.join(options.cwd, scriptPath), '777');
     }
 
     try {
-        const child = spawn(scriptPath, options.args, {
+        let command: string = "";
+        let args:string[] = [];
+        const scriptPaths: string[] = scriptPath.split(" ");
+        if (scriptCmd !== undefined && scriptCmd.length > 0) {
+            command = scriptCmd;
+            args = args.concat(scriptPaths);
+        } else {
+            command = scriptPaths[0];
+            args = args.concat(scriptPaths.slice(1));
+        }
+        args = args.concat(options.args);
+        const child = spawn(command, args, {
             cwd: options.cwd,
             shell: false,
             stdio: ['ignore', 'pipe', 'pipe'],

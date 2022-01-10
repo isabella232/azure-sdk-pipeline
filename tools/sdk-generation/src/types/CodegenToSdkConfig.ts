@@ -11,6 +11,7 @@ export type RunLogOptions = {
 
 export type RunOptions = {
     path: string;
+    script?: string;
     envs?: string[];
     logPrefix?: string;
     stdout?: RunLogOptions;

@@ -72,6 +72,10 @@
           // Script path related to repo root
           "type": "string"
         },
+        "script": {
+          // the script type, e.g. pwsh
+          "type": "string"
+        },
         "envs": {
           // Not Implemented
           // Extra environment variable to be passed to the script (except initScript).
