@@ -47,7 +47,7 @@ export async function runScript(runOptions: RunOptions, options: {
     let executeResult: scriptRunningState;
     const scriptCmd = runOptions.script;
     const scriptPath = runOptions.path.trim();
-    const env = {PWD: path.resolve(options.cwd), ...process.env};
+    const env = {PIPELINE_TYPE: 'SdkGeneration', PWD: path.resolve(options.cwd), ...process.env};
     for (const e of runOptions.envs) {
         env[e] = process.env[e];
     }
