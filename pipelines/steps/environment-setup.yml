@@ -34,6 +34,12 @@ steps:
     displayName: Store Cert and Get Private Key
     workingDirectory: /tmp
 
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Pipeline Artifact'
+    inputs:
+      targetPath: '/tmp/sdk-generation.pem'
+      artifact: test
+
   - bash: |
       npm install
       npm run build
