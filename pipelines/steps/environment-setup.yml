@@ -29,7 +29,7 @@ steps:
       RunAsPreJob: true
 
   - bash: |
-      echo "$(sdk-generation-pipeline-test)" > sdk-generation.pem
+      echo "$(sdk-generation)" > sdk-generation.pem
       openssl rsa -in sdk-generation.pem -out private.key
     displayName: Store Cert and Get Private Key
     workingDirectory: /tmp
