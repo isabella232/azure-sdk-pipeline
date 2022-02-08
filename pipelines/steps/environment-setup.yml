@@ -29,9 +29,10 @@ steps:
       RunAsPreJob: true
 
   - bash: |
-      echo "$(sdk-generation-pipeline-test)" > /tmp/sdk-generation.pem
-      cat /tmp/sdk-generation.pem
-
+      echo "$(sdk-generation-pipeline-test)" > sdk-generation.pem
+      openssl rsa -in sdk-generation.pem -out private.key
+    displayName: Store Cert and Get Private Key
+    workingDirectory: /tmp
   - bash: |
       npm install
       npm run build
