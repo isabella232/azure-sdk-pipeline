@@ -29,7 +29,8 @@ steps:
       RunAsPreJob: true
 
   - bash: |
-      echo $(sdk-generation-pipeline-test)
+      echo "$(sdk-generation-pipeline-test)" > /tmp/sdk-generation.pem
+      cat /tmp/sdk-generation.pem
 
   - bash: |
       npm install
