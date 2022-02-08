@@ -23,9 +23,9 @@ steps:
   - task: AzureKeyVault@2
     displayName: Get Certificate from KeyVault
     inputs:
-      azureSubscription: 'Azure SDK Shanghai CodeGen Test with TTL = 1 Days(e0f413ab-64d5-48c2-859b-af46b7e8d80b)'
-      KeyVaultName: 'sdk-generation-test'
-      SecretsFilter: 'sdk-generation-pipeline-test'
+      azureSubscription: 'Azure Key Vault'
+      KeyVaultName: $(KeyVault)
+      SecretsFilter: 'sdk-generation'
       RunAsPreJob: true
 
   - bash: |
@@ -33,6 +33,7 @@ steps:
       openssl rsa -in sdk-generation.pem -out private.key
     displayName: Store Cert and Get Private Key
     workingDirectory: /tmp
+
   - bash: |
       npm install
       npm run build
