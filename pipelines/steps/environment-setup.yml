@@ -20,6 +20,17 @@ steps:
     inputs:
       versionSpec: 14.x
 
+  - task: AzureKeyVault@2
+    displayName: Get Certificate from KeyVault
+    inputs:
+      azureSubscription: 'Azure SDK Shanghai CodeGen Test with TTL = 1 Days(e0f413ab-64d5-48c2-859b-af46b7e8d80b)'
+      KeyVaultName: 'sdk-generation-test'
+      SecretsFilter: 'sdk-generation-pipeline-test'
+      RunAsPreJob: true
+
+  - bash: |
+      echo $(SdkGenerationPipelineTest)
+
   - bash: |
       npm install
       npm run build
@@ -37,5 +48,3 @@ steps:
       getRepoName SDK_REPO ${{ parameters.sdkRepoUrl }}
     displayName: Clone Spec Repo and Sdk Repo
     workingDirectory: ../
-
-
