@@ -31,7 +31,7 @@ steps:
       retVal=$?
       if [ $retVal -ne 0 ]; then
         echo -e "\033[0;31mPublish Log failed"
-        curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
+        curl --cert /tmp/sdk-generation.pem -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
         echo '##vso[task.setVariable variable=PreTaskResult]failure'
         exit 1
       fi

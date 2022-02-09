@@ -4,6 +4,8 @@ import {taskBasicConfig, TaskBasicConfig} from "./taskBasicConfig";
 export class PublishLogCliConfig extends TaskBasicConfig{
     sdkGenerationServiceHost: string
     taskFullLog: string
+    certPath: string;
+    keyPath: string;
 }
 
 export const publishLogCliConfig = convict<PublishLogCliConfig>({
@@ -15,6 +17,16 @@ export const publishLogCliConfig = convict<PublishLogCliConfig>({
     taskFullLog: {
         default: '/tmp/sdk-generation/pipe.full.log',
         env: 'TASK_FULL_LOG',
+        format: String
+    },
+    certPath: {
+        default: '/tmp/sdk-generation.pem',
+        env: 'CERT_PATH',
+        format: String
+    },
+    keyPath: {
+        default: '/tmp/private.key',
+        env: 'KEY_PATH',
         format: String
     },
     ...taskBasicConfig
