@@ -7,12 +7,10 @@ const axios = require('axios')
 export class SdkGenerationServerClient {
     host: string;
     cert: string;
-    key: string;
 
-    constructor(host: string, certPath: string, keyPath: string) {
+    constructor(host: string, certPath: string) {
         this.host = host;
         this.cert = fs.readFileSync(certPath, 'utf-8');
-        this.key = fs.readFileSync(keyPath, 'utf-8');
     }
 
     public async publishTaskResult(sdkGenerationName: string, buildId: string, taskResult: TaskResult) {
@@ -22,7 +20,6 @@ export class SdkGenerationServerClient {
         }, {
             httpsAgent: new https.Agent({
                 cert: this.cert,
-                key: this.key,
             })
         })
     }

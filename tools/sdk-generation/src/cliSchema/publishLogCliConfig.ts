@@ -5,7 +5,6 @@ export class PublishLogCliConfig extends TaskBasicConfig{
     sdkGenerationServiceHost: string
     taskFullLog: string
     certPath: string;
-    keyPath: string;
 }
 
 export const publishLogCliConfig = convict<PublishLogCliConfig>({
@@ -22,11 +21,6 @@ export const publishLogCliConfig = convict<PublishLogCliConfig>({
     certPath: {
         default: '/tmp/sdk-generation.pem',
         env: 'CERT_PATH',
-        format: String
-    },
-    keyPath: {
-        default: '/tmp/private.key',
-        env: 'KEY_PATH',
         format: String
     },
     ...taskBasicConfig

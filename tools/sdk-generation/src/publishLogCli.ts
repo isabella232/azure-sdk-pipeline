@@ -9,7 +9,7 @@ import {requireJsonc} from "./utils/requireJsonc";
 export async function main() {
     const config: PublishLogCliConfig = publishLogCliConfig.getProperties();
     const azureBlobClient = new AzureBlobClient(config.azureStorageBlobSasUrl, config.azureBlobContainerName);
-    const sdkGenerationServerClient = new SdkGenerationServerClient(config.sdkGenerationServiceHost, config.certPath, config.keyPath);
+    const sdkGenerationServerClient = new SdkGenerationServerClient(config.sdkGenerationServiceHost, config.certPath);
     if (fs.existsSync(config.taskFullLog)) {
         await azureBlobClient.uploadLocal(config.taskFullLog, `${config.buildId}/${config.sdkGenerationName}-${config.taskName}.full.log`);
     }

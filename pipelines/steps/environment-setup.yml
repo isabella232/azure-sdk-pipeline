@@ -30,8 +30,7 @@ steps:
 
   - bash: |
       echo "$(sdk-generation)" > sdk-generation.pem
-      openssl rsa -in sdk-generation.pem -out private.key
-    displayName: Store Cert and Get Private Key
+    displayName: Store Cert
     workingDirectory: /tmp
 
   - bash: |
