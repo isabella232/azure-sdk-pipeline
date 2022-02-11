@@ -49,9 +49,8 @@ async function main() {
 }
 
 main().catch(e => {
-    logger.error(`${e.message}
-    ${e.stack}`);
     generateAndBuildTaskRunSuccessfully = false;
+    throw e;
 }).finally(() => {
     saveTaskResult();
     if (!generateAndBuildTaskRunSuccessfully) {
