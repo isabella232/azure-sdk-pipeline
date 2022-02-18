@@ -32,8 +32,10 @@ async function main() {
     }
     if (fs.existsSync(config.initOutput)) {
         const initOutputJson = initOutput(requireJsonc(config.initOutput));
-        for (const v of Object.keys(initOutputJson.envs)) {
-            console.log(`##vso[task.setVariable variable=${v};isOutput=true]${initOutputJson.envs[v]}`);
+        if (initOutputJson?.envs) {
+            for (const v of Object.keys(initOutputJson.envs)) {
+                console.log(`##vso[task.setVariable variable=${v};isOutput=true]${initOutputJson.envs[v]}`);
+            }
         }
     }
 }

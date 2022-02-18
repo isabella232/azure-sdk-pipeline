@@ -88,7 +88,12 @@ export async function runScript(runOptions: RunOptions, options: {
                 resolve({ code, signal });
             });
         });
-        executeResult = 'succeeded';
+        if (cmdRet.code === 0) {
+            executeResult = 'succeeded';
+        } else {
+            executeResult = 'failed';
+        }
+
     } catch (e) {
         cmdRet.code = -1;
         logger.error(e.stack);
