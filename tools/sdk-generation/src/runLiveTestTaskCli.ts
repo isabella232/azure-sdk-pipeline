@@ -18,7 +18,7 @@ export let liveTestTaskRunSuccessfully = true;
 async function main() {
     // TODO: currently, keep it similar to mockTest
     setTaskResult(config, 'LiveTest');
-    const liveTestTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'liveTest');
+    const liveTestTask = getTask(path.join(config.sdkRepo, config.configPath), 'liveTest');
     if (!liveTestTask) {
         throw `Init task is ${liveTestTask}`;
     }

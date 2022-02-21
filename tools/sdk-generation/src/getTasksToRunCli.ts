@@ -12,7 +12,7 @@ async function main() {
     if (!fs.existsSync(config.sdkRepo)) {
         throw `Cannot find sdk repo in ${config.sdkRepo}`;
     }
-    const codegenToSdkConfig: CodegenToSdkConfig = getCodegenToSdkConfig(requireJsonc(path.join(config.sdkRepo, 'codegen_to_sdk_config.json')));
+    const codegenToSdkConfig: CodegenToSdkConfig = getCodegenToSdkConfig(requireJsonc(path.join(config.sdkRepo, config.configPath)));
     const jobsToRun: string[] = [];
     for (const task of Object.keys(codegenToSdkConfig)) {
         if (config.skippedSteps.includes(task)) {

@@ -17,7 +17,7 @@ export let initTaskRunSuccessfully = true;
 async function main() {
     setTaskResult(config, 'Init');
 
-    const initTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'init');
+    const initTask = getTask(path.join(config.sdkRepo, config.configPath), 'init');
     if (!initTask) {
         throw `Init task is ${initTask}`;
     }

@@ -16,7 +16,7 @@ export let generateAndBuildTaskRunSuccessfully = true;
 
 async function main() {
     setTaskResult(config, 'GenerateAndBuild');
-    const generateAndBuildTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'generateAndBuild');
+    const generateAndBuildTask = getTask(path.join(config.sdkRepo, config.configPath), 'generateAndBuild');
     if (!generateAndBuildTask) {
         throw `Generate and build task is ${generateAndBuildTask}`;
     }
