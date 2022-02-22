@@ -16,7 +16,7 @@ export let mockTestTaskRunSuccessfully = true;
 
 async function main() {
     setTaskResult(config, 'MockTest');
-    const mockTestTask = getTask(path.join(config.sdkRepo, 'codegen_to_sdk_config.json'), 'mockTest');
+    const mockTestTask = getTask(path.join(config.sdkRepo, config.configPath), 'mockTest');
     if (!mockTestTask) {
         throw `Init task is ${mockTestTask}`;
     }

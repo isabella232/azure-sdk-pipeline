@@ -35,7 +35,7 @@ export async function executeTask(taskName: string,
         args: args
     });
     if (result === 'failed') {
-        throw new Error(`Execute Task ${taskName} failed.`);
+        taskResult.result = 'failure';
     }
     if (fs.existsSync(outputJsonPath)) {
         const outputJson = requireJsonc(outputJsonPath);

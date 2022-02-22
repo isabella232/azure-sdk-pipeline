@@ -2,6 +2,7 @@ import * as convict from 'convict';
 
 export class TaskBasicConfig {
     sdkRepo: string;
+    configPath: string;
     pipelineId: string;
     queuedAt: string;
     pipeLog: string;
@@ -18,6 +19,11 @@ export const taskBasicConfig = {
     sdkRepo: {
         default: '',
         env: 'SDK_REPO',
+        format: String
+    },
+    configPath: {
+        default: 'eng/codegen_to_sdk_config.json',
+        env: 'CONFIG_PATH',
         format: String
     },
     pipelineId: {
