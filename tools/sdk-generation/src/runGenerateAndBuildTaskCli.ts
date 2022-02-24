@@ -22,14 +22,15 @@ async function main() {
     }
     const generateAndBuildOptions = generateAndBuildTask as GenerateAndBuildOptions;
     const runOptions = generateAndBuildOptions.generateAndBuildScript;
-    const relatedReadmeMdFile = path.join(config.specFolder, config.relatedReadmeMdFile);
+    const relatedReadmeMdFileAbsolutePath = path.join(config.specFolder, config.relatedReadmeMdFile);
     const specFolder = config.specFolder.includes('specification')? config.specFolder : path.join(config.specFolder, 'specification');
+    const relatedReadmeMdFileRelativePath = path.relative(specFolder, relatedReadmeMdFileAbsolutePath);
     const inputContent: GenerateAndBuildInput = {
         specFolder: specFolder,
         headSha: config.headSha,
         headRef: config.headRef,
         repoHttpsUrl: config.repoHttpsUrl,
-        relatedReadmeMdFile: relatedReadmeMdFile,
+        relatedReadmeMdFile: relatedReadmeMdFileRelativePath,
         serviceType: config.serviceType
     };
     const inputJson = JSON.stringify(inputContent, undefined, 2)
