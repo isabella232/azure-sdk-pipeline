@@ -72,13 +72,18 @@ export type TaskResultCommon = {
 export type CodegenCodeGenerateTaskResult = TaskResultCommon & {
     codeUrl?: string;
 };
-
+export interface TestCase {
+  name: string;
+  passed: boolean;
+  message: string;
+}
 export type TestTaskResult = TaskResultCommon & {
     total?: number;
     success?: number;
     fail?: number;
     apiCoverage?: number;
     codeCoverage?: number;
+    testcases? :TestCase[];
 };
 
 export type TaskResult =
