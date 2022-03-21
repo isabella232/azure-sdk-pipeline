@@ -68,11 +68,6 @@ stages:
       - job: SdkGeneration
         displayName: ${{ parameters.sdkGenerationName }}-${{ parameters.sdk }}-${{ parameters.serviceType }}-${{ parameters.resourceProvider }}
         steps:
-          - bash: |
-              curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "in_progress","lastPipelineBuildID": "$(Build.BuildId)"}}'
-            displayName: Notify Sdk Generation Server to Start
-            env:
-              SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
 
           - template: ./pipelines/steps/environment-setup.yml
             parameters:
