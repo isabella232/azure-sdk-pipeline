@@ -92,8 +92,4 @@ stages:
               sdkRepoBaseBranch: ${{ parameters.sdkRepoBaseBranch }}
               skippedTask: ${{ parameters.skippedTask }}
               serviceType: ${{ parameters.serviceType }}
-          - bash: |
-              curl -X PATCH -H "Content-Type: application/json" https://$(CodegenApp_Server)/codegenerations/${SDK_GENERATION_NAME} -d '{"updateParameters": {"status": "completed"}}'
-            displayName: Set Complete
-            env:
-              SDK_GENERATION_NAME: ${{ parameters.sdkGenerationName }}
+
