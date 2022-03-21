@@ -1,9 +1,9 @@
-import {RunLogOptions, RunOptions} from "../types/CodegenToSdkConfig";
+import {RunLogOptions, RunOptions} from "../types/taskInputAndOuputSchemaTypes/CodegenToSdkConfig";
 import * as path from "path";
 import {spawn} from "child_process";
 import {logger} from "../utils/logger";
 import {Readable} from "stream";
-import {scriptRunningState} from "./scriptRunningState";
+import {scriptRunningState} from "../types/scriptRunningState";
 import * as fs from "fs";
 
 export const isLineMatch = (line: string, filter: RegExp | undefined) => {

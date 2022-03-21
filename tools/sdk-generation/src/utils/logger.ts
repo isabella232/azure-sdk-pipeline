@@ -1,6 +1,6 @@
 import * as winston from 'winston';
-import {MessageLevel, taskResult} from "../lib/taskResult";
-import {getTaskBasicConfig, TaskBasicConfig} from "../cliSchema/taskBasicConfig";
+import {MessageLevel, taskResult} from "../types/taskResult";
+import {getTaskBasicConfig, TaskBasicConfig} from "../types/taskBasicConfig";
 
 function getLogger() {
     const config: TaskBasicConfig = getTaskBasicConfig.getProperties();
