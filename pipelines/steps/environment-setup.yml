@@ -35,14 +35,15 @@ steps:
     workingDirectory: /tmp
 
   - bash: |
-      npm install
-      npm run build
-      npm pack
-      PACKAGE_TGZ=`ls sdk-generation-lib-*.tgz`
+      npm install -g @microsoft/rush
+      rush update
+      rush build
+      cd tools/sdk-generation-cli
+      rushx pack
+      PACKAGE_TGZ=`ls sdk-generation-cli-*.tgz`
       npm install -g ${PACKAGE_TGZ}
       npm install -g autorest
     displayName: Setup Pipeline Runtime Environment
-    workingDirectory: tools/sdk-generation
 
   - bash: |
       git clone --branch ${{ parameters.specRepoBaseBranch }} ${{ parameters.specRepoUrl }}
