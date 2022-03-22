@@ -40,6 +40,7 @@ steps:
       rush build
       cd tools/sdk-generation-cli
       rushx pack
+      echo "install sdk-generation-cli"
       PACKAGE_TGZ=`ls sdk-generation-cli-*.tgz`
       npm install -g ${PACKAGE_TGZ}
       npm install -g autorest
