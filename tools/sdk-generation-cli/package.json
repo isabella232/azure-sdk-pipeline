@@ -36,6 +36,9 @@
     "convict": "^6.2.1",
     "sdk-generation-lib": "^1.0.0"
   },
+  "bundledDependencies": [
+    "sdk-generation-lib"
+  ],
   "devDependencies": {
     "@types/node": "^16.11.7",
     "rimraf": "^3.0.2"
