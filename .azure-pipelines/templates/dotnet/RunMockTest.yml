@@ -1,5 +1,0 @@
-steps:
-- bash: |
-    set -x
-    echo "Not Supported"
-  displayName: 'Mock Test'

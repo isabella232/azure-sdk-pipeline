@@ -1,1 +1,0 @@
-https://github.com/Azure/azure-cli-dev-tools/archive/v0.1.28.tar.gz
