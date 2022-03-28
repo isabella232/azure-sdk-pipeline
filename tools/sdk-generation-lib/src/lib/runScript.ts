@@ -1,4 +1,4 @@
-import {RunLogOptions, RunOptions} from "../types/taskInputAndOuputSchemaTypes/CodegenToSdkConfig";
+import {RunOptions} from "../types/taskInputAndOuputSchemaTypes/CodegenToSdkConfig";
 import * as path from "path";
 import {spawn} from "child_process";
 import {logger} from "../utils/logger";
@@ -17,22 +17,13 @@ export const isLineMatch = (line: string, filter: RegExp | undefined) => {
 const listenOnStream = (
     prefix: string,
     stream: Readable,
-    opts: RunLogOptions | undefined,
     logType: 'cmdout' | 'cmderr'
 ) => {
     const addLine = (line: string) => {
         if (line.length === 0) {
             return;
         }
-        let storeLog = false;
-        if (opts !== undefined) {
-            if (opts.storeAllLog) {
-                storeLog = true;
-            } else if (isLineMatch(line, opts.storeLogByFilter)) {
-                storeLog = true;
-            }
-        }
-        logger.log(logType, `${prefix} ${line}`, {show: storeLog});
+        logger.log(logType, `${prefix} ${line}`, {show: true});
     };
 
     stream.on('data', (data) => {
@@ -80,8 +71,8 @@ export async function runScript(runOptions: RunOptions, options: {
             env
         });
         const prefix = `[${runOptions.logPrefix ?? path.basename(scriptPath)}]`;
-        listenOnStream(prefix, child.stdout, runOptions.stdout, 'cmdout');
-        listenOnStream(prefix, child.stderr, runOptions.stderr, 'cmderr');
+        listenOnStream(prefix, child.stdout, 'cmdout');
+        listenOnStream(prefix, child.stderr, 'cmderr');
 
         cmdRet = await new Promise((resolve) => {
             child.on('exit', (code, signal) => {

@@ -8,7 +8,4 @@ export type MockTestInput = {
     mockServerHost: string;
 };
 
-export const getMockTestInput = getTypeTransformer<MockTestInput>(
-    mockTestInputSchema,
-    'InitOutput'
-);
+export const getMockTestInput = getTypeTransformer<MockTestInput>(mockTestInputSchema, 'MockTestInput');

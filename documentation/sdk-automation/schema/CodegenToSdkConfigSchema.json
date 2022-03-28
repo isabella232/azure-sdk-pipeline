@@ -91,24 +91,9 @@
           // Prefix to be added to SDK Automation log. By default it would be filename of the script.
           "type": "string"
         },
-        "stdout": {
-          // How should SDK Automation handle the script stdout stream
-          "allOf": [
-            {
-              "$ref": "#/definitions/RunLogOptions"
-            }
-          ]
-        },
-        "stderr": {
-          // How should SDK Automation handle the script stderr stream
-          "allOf": [
-            {
-              "$ref": "#/definitions/RunLogOptions"
-            }
-          ],
-          "default": {
-            "storeAllLog": true
-          }
+        "logFilter": {
+          // filter for error msg and warning msg.
+          "$ref": "#/definitions/LogFilter"
         },
         "exitWithNonZeroCode": {
           "properties": {
@@ -133,16 +118,19 @@
       },
       "required": ["path"]
     },
-    "RunLogOptions": {
-      // How should SDK Automation handle the log stream.
-      "storeAllLog": {
-        "type": "boolean"
-      },
-      "storeLogByFilter": {
-        // Only work when storeAlllog is set to false.
-        // The value is a typescript/javascript regex.
-        "type": "string",
-        "format": "regex"
+    "LogFilter": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "format": "regex",
+          "default": "/(error|Error|ERROR|failed|Failed|FAILED|exception|Exception|EXCEPTION)/g"
+        },
+        "warning": {
+          "type": "string",
+          "format": "regex",
+          "default": "/warn/g"
+        }
       }
     }
   }

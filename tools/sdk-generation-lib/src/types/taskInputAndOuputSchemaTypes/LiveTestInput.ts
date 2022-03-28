@@ -7,7 +7,4 @@ export type LiveTestInput = {
     packageFolder: string;
 };
 
-export const getLiveTestInput = getTypeTransformer<LiveTestInput>(
-    liveTestInputSchema,
-    'InitOutput'
-);
+export const getLiveTestInput = getTypeTransformer<LiveTestInput>(liveTestInputSchema, 'MockTestInput');

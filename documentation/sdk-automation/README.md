@@ -43,13 +43,10 @@ The working folder of all the scripts is the __root folder of sdk repo__.
     // path_to_generateAndBuildOutput.json: See #GenerateAndBuildOutput.
       "generateAndBuildScript": {
         "path": ".scripts/sdk_generateAndBuild.sh",
-        "stderr": {
-           // Everything in stderr will be stored in database.
-           "storeAllLog": true
-         },
-         "stdout": {
-           // Store logs starting with "[Autorest]" will be stored the stream of stdout by default.
-           "storeLogByFilter": "^\\[Autorest\\]"
+        "logFilter": {
+           // filter for error msg and warning msg.
+           "error": "(error|failed|exception)",
+           "warning": "warn"
          }
       }
   },
