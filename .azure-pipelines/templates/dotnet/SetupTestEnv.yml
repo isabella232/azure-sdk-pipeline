@@ -1,7 +1,0 @@
-steps:
-- bash: |
-    bash ./scripts/bash/dotnet/installDotnet.sh
-  displayName: 'install .net'
-- bash: |
-    git clone --branch $(WORKBRANCH) https://$(PIPELINE_USER):$(PIPELINE_TOKEN)@$(SDK_REPO_URL)
-  displayName: 'Setup Test Env'
