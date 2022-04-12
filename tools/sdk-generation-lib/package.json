@@ -23,11 +23,17 @@
     "README.md"
   ],
   "dependencies": {
+    "@azure/event-hubs": "~5.5.1",
     "@azure/storage-blob": "^12.8.0",
+    "@octokit/auth-app": "^2.4.5",
+    "@octokit/rest": "^18.0.3",
+    "@ts-common/azure-js-dev-tools": "^22.4.24",
     "ajv": "^6.12.6",
     "colors": "^1.4.0",
     "convict": "^6.2.1",
     "jsonc-parser": "^3.0.0",
+    "hot-shots": "^8.5.2",
+    "memory-fs": "^0.5.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
