@@ -1,0 +1,18 @@
+variables:
+  CodeGenerationName: rirp
+  SDK: dotnet
+  SERVICE_TYPE: resource-manager
+  stages: Setup;GenerateCode;Build;MockTest;LiveTest
+  SPEC_REPO_TYPE: github
+  SPEC_REPO_URL: github.com/Azure/azure-rest-api-specs
+  SPEC_REPO_BASE_BRANCH: main
+  SPEC_REPO_OWNER: Azure
+  SPEC_REPO_NAME: azure-rest-api-specs
+  SDK_REPO_TYPE: github
+  SDK_REPO_URL: github.com/azure/azure-sdk-for-net
+  SDK_REPO_BASE_BRANCH: main
+  SDK_REPO_OWNER: azure
+  SDK_REPO_NAME: azure-sdk-for-net
+  README_FILE_GITHUB_URL_WITH_COMMIT: >-
+    https://github.com/Azure/azure-rest-api-specs/blob/f5b15e812e6e5228eaebf3b629a682a088afebd6/specification/reservations/resource-manager/readme.md
+  CHECK_OUT: false
