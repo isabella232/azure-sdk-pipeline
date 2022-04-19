@@ -1,0 +1,18 @@
+variables:
+  CodeGenerationName: rirp-cli
+  SDK: cli
+  SERVICE_TYPE: resource-manager
+  stages: Setup;GenerateCode;MockTest;LiveTest
+  SPEC_REPO_TYPE: github
+  SPEC_REPO_URL: github.com/Azure/azure-rest-api-specs
+  SPEC_REPO_BASE_BRANCH: main
+  SPEC_REPO_OWNER: Azure
+  SPEC_REPO_NAME: azure-rest-api-specs
+  SDK_REPO_TYPE: github
+  SDK_REPO_URL: github.com/azure/azure-cli
+  SDK_REPO_BASE_BRANCH: dev
+  SDK_REPO_OWNER: azure
+  SDK_REPO_NAME: azure-cli
+  README_FILE_GITHUB_URL_WITH_COMMIT: >-
+    https://github.com/Azure/azure-rest-api-specs/blob/6690ec1649168a1b5b2aadf4aa656de99eefdb23/specification/reservations/resource-manager/readme.md
+  CHECK_OUT: false
